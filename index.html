@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vegspor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/maplibre-gl-style-flipper@1.0.9/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.19.10/dist/proj4.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --outer-pad: 14px;
+      --gap: 14px;
+      --sidebar-width: 314px;
+      --bg: #08111d;
+      --panel: rgba(8, 17, 29, 0.82);
+      --panel-strong: rgba(8, 17, 29, 0.92);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #eef4ff;
+      --muted: #9fb1c8;
+      --dim: #6d8099;
+      --accent: #9ad1ff;
+      --accent-2: #ffb85c;
+      --metric-period: #e5f0ff;
+      --metric-period-ring: rgba(124, 182, 255, 0.34);
+      --metric-period-inner-ring: rgba(194, 220, 255, 0.2);
+      --metric-period-glow: rgba(124, 182, 255, 0.22);
+      --metric-length: #ffc76a;
+      --metric-length-soft: #ffe3ad;
+      --metric-length-glow: rgba(255, 199, 106, 0.18);
+      --motorvei: #ff9f1c;
+      --bru: #4d96ff;
+      --tunnel: #ff5a5f;
+      --utbedring: #9b5cff;
+      --fellesprosjekt: #2dd36f;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.32);
+      --radius: 18px;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(90, 137, 247, 0.26), transparent 34%),
+        radial-gradient(circle at top right, rgba(123, 223, 242, 0.18), transparent 28%),
+        linear-gradient(180deg, #0a1424 0%, #07101a 100%);
+      color: var(--text);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 90%);
+    }
+
+    #map {
+      position: absolute;
+      inset: var(--outer-pad) calc(var(--sidebar-width) + var(--outer-pad) + var(--gap)) var(--outer-pad) var(--outer-pad);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .chrome {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr) minmax(280px, 360px);
+      grid-template-rows: auto 1fr auto;
+      gap: var(--gap);
+      padding: var(--outer-pad);
+    }
+
+    .panel {
+      pointer-events: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .topbar {
+      grid-column: 1 / 3;
+      grid-row: 1;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: none;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      pointer-events: none;
+    }
+
+    .topbar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .title-card,
+    .view-switcher {
+      pointer-events: auto;
+      background:
+        linear-gradient(180deg, rgba(154, 209, 255, 0.08), rgba(255, 255, 255, 0.015)),
+        var(--panel-strong);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .title-card {
+      max-width: 296px;
+      padding: 2px 2px 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(154, 209, 255, 0.08);
+      color: var(--accent);
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .topbar h1 {
+      margin: 7px 0 2px;
+      font-size: clamp(1.08rem, 1.28vw, 1.34rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.68rem;
+      line-height: 1.45;
+      max-width: 16.5rem;
+    }
+
+    .topbar strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .topbar-right {
+      position: absolute;
+      top: 0;
+      right: calc(var(--sidebar-width) + var(--gap) + 22px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-right: calc(var(--sidebar-width) + var(--gap));
+    }
+
+    .meta-stack,
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .view-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px;
+    }
+
+    .mode-toggle {
+      gap: 6px;
+    }
+
+    .mode-btn {
+      padding: 7px 11px;
+      border-radius: 11px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 0.74rem;
+      font-weight: 600;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .mode-btn.active {
+      color: var(--text);
+      background: rgba(154, 209, 255, 0.12);
+      border-color: rgba(154, 209, 255, 0.28);
+    }
+
+    .sidebar h2,
+    .timeline h2,
+    .legend-card h3 {
+      margin: 0 0 10px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .legend-card {
+      padding: 11px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .legend-rows {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      font-size: 0.82rem;
+    }
+
+    .legend-row:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .legend-chip {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .legend-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: var(--outer-pad);
+      bottom: var(--outer-pad);
+      width: var(--sidebar-width);
+      z-index: 12;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 14px;
+      transition: width 0.22s ease, right 0.22s ease;
+    }
+
+    .sidebar-right {
+      right: var(--outer-pad);
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-heading {
+      min-width: 0;
+    }
+
+    .sidebar-heading h2 {
+      margin: 2px 0 0;
+    }
+
+    .sidebar-kicker {
+      display: block;
+      color: var(--dim);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-body {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .sidebar-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .tab-strip {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 9px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+      background: rgba(154, 209, 255, 0.12);
+      border-color: rgba(154, 209, 255, 0.28);
+    }
+
+    .tab-panel {
+      display: none;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .tab-panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-panel {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      border-radius: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .detail-panel h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.2;
+    }
+
+    .detail-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.55;
+    }
+
+    .inspector-context {
+      display: grid;
+      gap: 6px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .inspector-state {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .inspector-state.hover {
+      background: rgba(154, 209, 255, 0.12);
+      color: #d9eeff;
+    }
+
+    .inspector-state.selected {
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .inspector-hint {
+      color: var(--dim);
+      font-size: 0.68rem;
+      line-height: 1.4;
+    }
+
+    .detail-kicker {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      color: var(--dim);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .detail-heading {
+      display: grid;
+      gap: 8px;
+    }
+
+    .detail-keyfacts {
+      display: grid;
+      gap: 8px;
+    }
+
+    .detail-keyfact {
+      display: grid;
+      gap: 2px;
+      padding: 9px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .detail-keyfact:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .detail-keyfact strong {
+      display: block;
+      color: var(--dim);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .detail-keyfact span {
+      color: var(--text);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .detail-secondary {
+      margin: 0;
+      padding-top: 2px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: grid;
+      gap: 6px;
+    }
+
+    .detail-secondary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      line-height: 1.35;
+    }
+
+    .detail-secondary-row strong {
+      color: var(--dim);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .detail-secondary-row span {
+      text-align: right;
+      color: var(--muted);
+    }
+
+    .detail-disclosure {
+      padding-top: 2px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .detail-disclosure summary {
+      cursor: pointer;
+      list-style: none;
+      color: var(--dim);
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .detail-disclosure summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .detail-disclosure p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.5;
+    }
+
+    .pill {
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      font-size: 0.64rem;
+    }
+
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+      min-height: 0;
+      padding-right: 2px;
+    }
+
+    .projects-summary {
+      margin-bottom: 14px;
+    }
+
+    .project-card {
+      padding: 11px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.045);
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .project-card:hover,
+    .project-card.active {
+      transform: translateY(-1px);
+      border-color: rgba(154, 209, 255, 0.4);
+      background: rgba(154, 209, 255, 0.08);
+    }
+
+    .project-card h3 {
+      margin: 0 0 4px;
+      font-size: 0.84rem;
+      line-height: 1.25;
+    }
+
+    .project-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .project-card .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      font-size: 0.66rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.74rem;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .link-btn.secondary {
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .timeline {
+      grid-column: 1 / 3;
+      grid-row: 3;
+      padding: 12px 14px;
+      align-self: end;
+      background:
+        linear-gradient(180deg, rgba(154, 209, 255, 0.04), transparent 55%),
+        var(--panel);
+    }
+
+    .timeline.hidden {
+      display: none;
+    }
+
+    .timeline-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 8px;
+    }
+
+    .year-readout {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .year-readout strong {
+      font-size: clamp(1.35rem, 1.6vw, 1.8rem);
+      line-height: 1;
+      letter-spacing: -0.06em;
+    }
+
+    .year-readout span {
+      color: var(--muted);
+      font-size: 0.82rem;
+      max-width: 22rem;
+    }
+
+    .timeline-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .play {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: var(--bg);
+      background: linear-gradient(135deg, var(--accent), #dff6ff);
+      box-shadow: 0 12px 25px rgba(154, 209, 255, 0.25);
+    }
+
+    .ghost {
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .slider-wrap {
+      position: relative;
+      margin-top: 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(154, 209, 255, 0.7));
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: var(--accent-2);
+      box-shadow: 0 0 0 6px rgba(255, 184, 92, 0.18);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: var(--accent-2);
+      box-shadow: 0 0 0 6px rgba(255, 184, 92, 0.18);
+    }
+
+    .ticks {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--dim);
+      font-size: 0.72rem;
+      margin-top: 8px;
+    }
+
+    .layer-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .layer-card {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .layer-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.96rem;
+    }
+
+    .layer-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .layer-row:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .layer-row label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .layer-row strong {
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .layer-row span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .style-preset-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .style-preset-btn {
+      flex: 1;
+      padding: 7px 9px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .style-preset-btn.active {
+      background: rgba(154, 209, 255, 0.12);
+      border-color: rgba(154, 209, 255, 0.28);
+      color: var(--text);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-flex;
+      width: 42px;
+      height: 24px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-switch {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      transition: background 0.2s ease;
+    }
+
+    .slider-switch::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.2s ease;
+    }
+
+    .switch input:checked + .slider-switch {
+      background: rgba(154, 209, 255, 0.55);
+    }
+
+    .switch input:checked + .slider-switch::before {
+      transform: translateX(18px);
+    }
+
+    .coord-readout {
+      position: absolute;
+      left: calc(var(--outer-pad) + 8px);
+      right: auto;
+      top: auto;
+      bottom: calc(var(--outer-pad) + 8px);
+      z-index: 14;
+      pointer-events: none;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.64rem;
+      background: rgba(7, 16, 26, 0.66);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hover-stats {
+      position: absolute;
+      left: calc(var(--outer-pad) + 8px);
+      top: calc(var(--outer-pad) + 8px);
+      z-index: 14;
+      width: min(292px, calc(100vw - 48px));
+      pointer-events: none;
+      display: none;
+      padding: 12px 12px 11px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.06), transparent 26%),
+        linear-gradient(180deg, rgba(154, 209, 255, 0.08), transparent 72%),
+        rgba(7, 16, 26, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .hover-stats.visible {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hover-stats-head {
+      display: grid;
+      gap: 5px;
+    }
+
+    .hover-stats-kicker {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 7px;
+      color: var(--dim);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hover-stats-title {
+      margin: 0;
+      font-size: 0.86rem;
+      line-height: 1.24;
+      letter-spacing: -0.02em;
+    }
+
+    .hover-hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0 11px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .hover-period-stack {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+    }
+
+    .hover-metric-disc {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 1px solid var(--metric-period-ring);
+      background:
+        radial-gradient(circle at center, rgba(215, 231, 255, 0.16), transparent 62%),
+        rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 0 0 1px rgba(124, 182, 255, 0.06),
+        0 0 26px var(--metric-period-glow);
+    }
+
+    .hover-metric-disc::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 1px solid var(--metric-period-inner-ring);
+    }
+
+    .hover-metric-disc-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 1px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .hover-metric-disc-value {
+      font-size: 1.46rem;
+      line-height: 0.95;
+      letter-spacing: -0.08em;
+      font-weight: 800;
+      color: var(--metric-period);
+      text-shadow: 0 0 18px rgba(213, 233, 255, 0.12);
+    }
+
+    .hover-metric-disc-label {
+      color: var(--dim);
+      font-size: 0.48rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hover-metric-disc-range {
+      color: var(--dim);
+      font-size: 0.5rem;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    .hover-hero-copy {
+      display: grid;
+      gap: 3px;
+    }
+
+    .hover-metric-kicker {
+      color: var(--dim);
+      font-size: 0.56rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hover-metric-value {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 2.15rem;
+      line-height: 0.95;
+      letter-spacing: -0.08em;
+      font-weight: 800;
+      color: var(--metric-length);
+      text-shadow: 0 0 18px var(--metric-length-glow);
+    }
+
+    .hover-metric-value span {
+      font-size: 0.82rem;
+      letter-spacing: 0;
+      color: var(--metric-length-soft);
+      font-weight: 600;
+    }
+
+    .hover-metric-copy {
+      color: var(--muted);
+      font-size: 0.66rem;
+      line-height: 1.35;
+    }
+
+    .hover-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .hover-stat {
+      display: grid;
+      gap: 3px;
+      padding: 7px 8px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.032);
+      border: 1px solid rgba(255, 255, 255, 0.045);
+    }
+
+    .hover-stat strong {
+      color: var(--dim);
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hover-stat span {
+      color: var(--text);
+      font-size: 0.68rem;
+      line-height: 1.32;
+    }
+
+    .detail-hero {
+      margin-top: 4px;
+    }
+
+    .detail-mini-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .coord-readout strong {
+      display: inline;
+      color: var(--dim);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-right: 5px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.5;
+      padding: 4px 0;
+    }
+
+    .maplibregl-popup {
+      max-width: 300px;
+    }
+
+    .maplibregl-popup-content {
+      border-radius: 16px;
+      background: #0b1523;
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+      padding: 16px 16px 14px;
+    }
+
+    .popup-title {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      line-height: 1.25;
+    }
+
+    .popup-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .style-flipper-control.compact {
+      background: rgba(8, 17, 29, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .style-flipper-control .style-toggle-btn,
+    .style-flipper-control .style-option {
+      color: var(--text);
+    }
+
+    .style-flipper-control .style-dropdown {
+      background: rgba(8, 17, 29, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 1120px) {
+      body {
+        overflow: auto;
+      }
+
+      #map {
+        position: fixed;
+        inset: 0;
+        border-radius: 0;
+      }
+
+      .chrome {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 120px;
+      }
+
+      .timeline,
+      .topbar,
+      .sidebar {
+        width: 100%;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .topbar-right,
+      .meta-stack {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .topbar-right {
+        position: static;
+      }
+
+      .title-card,
+      .view-switcher {
+        width: 100%;
+      }
+
+      .sidebar {
+        position: relative;
+        top: auto;
+        right: auto;
+        left: auto;
+        bottom: auto;
+        width: 100%;
+      }
+
+      .coord-readout {
+        left: 18px;
+        bottom: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="coord-readout">
+    <strong>UTM 32</strong>
+    <span id="cursorCoords">E 604000 · N 6695000</span>
+  </div>
+
+  <div id="hoverStatsCard" class="hover-stats"></div>
+
+  <div class="chrome">
+    <section class="topbar">
+      <div class="topbar-left">
+        <div class="title-card">
+          <div class="eyebrow">Vegspor</div>
+          <h1>Vegspor</h1>
+          <p>
+            Kartet skal lese prosjektene forst. Sidepanelet og tidslinjen skal bare gi kontroll.
+          </p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="view-switcher">
+          <div class="mode-toggle">
+            <button id="modeAllButton" class="mode-btn active" type="button">Alle prosjekter</button>
+            <button id="modeTimelineButton" class="mode-btn" type="button">Tidslinje</button>
+          </div>
+          <div class="meta-stack">
+            <div class="pill" id="topbarYearPill">Alle</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside id="sidebarPanel" class="panel sidebar sidebar-right">
+      <div class="sidebar-header">
+        <div class="sidebar-heading">
+          <span class="sidebar-kicker">Prosjektpanel</span>
+          <h2 id="sidebarTitle">Prosjekt</h2>
+        </div>
+      </div>
+      <div class="sidebar-body">
+        <div class="tab-strip" id="tabStrip">
+          <button class="tab-btn active" data-tab="selected" type="button">Valgt</button>
+          <button class="tab-btn" data-tab="projects" type="button">Prosjekter</button>
+          <button class="tab-btn" data-tab="layers" type="button">Lag</button>
+        </div>
+        <section id="selectedTab" class="tab-panel active">
+          <div id="detailPanel" class="detail-panel"></div>
+        </section>
+        <section id="projectsTab" class="tab-panel">
+          <div class="sidebar-meta projects-summary">
+            <div class="pill" id="projectCountPill">Aktive: 0</div>
+            <div class="pill" id="projectYearPill">År: -</div>
+          </div>
+          <div id="projectList" class="project-list"></div>
+        </section>
+        <section id="layersTab" class="tab-panel">
+          <div class="layer-panel">
+            <div class="layer-card">
+              <h3>Kartlag</h3>
+              <p>Hold kartet rolig. Basemapen bærer nå vegnettet, mens disse valgene styrer prosjektlesbarheten.</p>
+              <div class="layer-row">
+                <label>
+                  <strong>Linjestil</strong>
+                  <span>Bytt mellom en roligere kartstil og en mer presentasjonsdrevet glow.</span>
+                </label>
+              </div>
+              <div class="style-preset-group" id="stylePresetGroup">
+                <button id="styleCartographicButton" class="style-preset-btn" type="button">Kartografisk</button>
+                <button id="stylePresentationButton" class="style-preset-btn active" type="button">Presentasjon</button>
+              </div>
+              <div class="layer-row">
+                <label for="toggleCompleted">
+                  <strong>Fullførte prosjekter</strong>
+                  <span>Vis historiske strekninger som dempet kontekst.</span>
+                </label>
+                <label class="switch">
+                  <input id="toggleCompleted" type="checkbox" checked />
+                  <span class="slider-switch"></span>
+                </label>
+              </div>
+              <div class="layer-row">
+                <label for="toggleGlow">
+                  <strong>Aktiv glød</strong>
+                  <span>Vis ekstra glow rundt aktive strekninger.</span>
+                </label>
+                <label class="switch">
+                  <input id="toggleGlow" type="checkbox" checked />
+                  <span class="slider-switch"></span>
+                </label>
+              </div>
+            </div>
+            <div class="layer-card">
+              <h3>Basemap</h3>
+              <p>Standard er `Geodata Kanvas Mork`. Bruk stilkontrollen i kartet for å sammenligne andre basemaps raskt.</p>
+            </div>
+            <div id="legendCard" class="legend-card">
+              <h3>Prosjekttyper</h3>
+              <div id="legendRows" class="legend-rows"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <section class="panel timeline">
+      <div class="timeline-top">
+        <div>
+          <h2>Tidslinje</h2>
+          <div class="year-readout">
+            <strong id="currentYear">0</strong>
+            <span id="timelineCaption">Viser prosjekter som er aktive i valgt år.</span>
+          </div>
+        </div>
+        <div class="timeline-controls">
+          <button id="playButton" class="play" aria-label="Spill av tidslinje">▶</button>
+          <button id="resetButton" class="ghost">Til start</button>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <input id="yearSlider" type="range" min="0" max="0" value="0" step="1" />
+        <div id="ticks" class="ticks"></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./mock-projects.js"></script>
+  <script>
+    const PROJECT_TYPE_META = {
+      motorvei: { label: "Motorvei", color: "#f3a43b", mutedColor: "#bf9158" },
+      bru: { label: "Bru", color: "#53a7ff", mutedColor: "#628ab6" },
+      tunnel: { label: "Tunnel", color: "#ff736f", mutedColor: "#b97a80" },
+      utbedring: { label: "Utbedring", color: "#a875ff", mutedColor: "#8d74b8" },
+      fellesprosjekt: { label: "Veg + bane", color: "#39cf88", mutedColor: "#5ea783" }
+    };
+
+    const ROUTE_STYLE_PRESETS = {
+      cartographic: {
+        activeCasing: [5.1, 8, 13.2],
+        activeCore: [2.6, 4.6, 8.4],
+        activeCoreOpacity: 0.8,
+        activeGlowWidth: [7.5, 12, 18],
+        activeGlowOpacity: 0.08,
+        activeGlowBlur: 5,
+        selectedCasing: [5.3, 8.6, 13.4],
+        selectedCore: [3.2, 5.5, 9.1],
+        selectedGlowWidth: [8.2, 13.6, 20.5],
+        selectedGlowOpacity: 0.22,
+        selectedGlowBlur: 8,
+        hoverCasing: [4.2, 7, 11.2],
+        hoverCore: [2.5, 4.4, 7.6],
+        hoverGlowWidth: [7.4, 12.2, 18.8],
+        hoverGlowOpacity: 0.18,
+        hoverGlowBlur: 7,
+        completedCasing: [2, 3.4, 5.8],
+        completedCore: [1, 1.9, 3.2],
+        completedOpacity: 0.34,
+        selectedCompletedCasing: [4.2, 6.8, 10.8],
+        selectedCompletedCore: [2.3, 3.9, 6.8],
+        selectedCompletedGlowWidth: [6.8, 10.8, 16.2],
+        selectedCompletedGlowOpacity: 0.16,
+        selectedCompletedGlowBlur: 7,
+        hoverCompletedCasing: [3.3, 5.4, 9.2],
+        hoverCompletedCore: [1.8, 3.1, 5.4],
+        hoverCompletedGlowWidth: [5.9, 9.2, 14.2],
+        hoverCompletedGlowOpacity: 0.12,
+        hoverCompletedGlowBlur: 6
+      },
+      presentation: {
+        activeCasing: [6.1, 9.8, 15.8],
+        activeCore: [3.2, 5.8, 10.4],
+        activeCoreOpacity: 0.74,
+        activeGlowWidth: [12, 20, 30],
+        activeGlowOpacity: 0.16,
+        activeGlowBlur: 11,
+        selectedCasing: [6, 9.8, 15.2],
+        selectedCore: [3.8, 6.5, 10.8],
+        selectedGlowWidth: [12, 20, 31],
+        selectedGlowOpacity: 0.34,
+        selectedGlowBlur: 12,
+        hoverCasing: [5.2, 8.4, 13.1],
+        hoverCore: [3.1, 5.4, 9.2],
+        hoverGlowWidth: [10.5, 17.5, 27],
+        hoverGlowOpacity: 0.28,
+        hoverGlowBlur: 11,
+        completedCasing: [2.1, 3.6, 6.1],
+        completedCore: [1.1, 2.1, 3.6],
+        completedOpacity: 0.3,
+        selectedCompletedCasing: [4.9, 8.1, 12.7],
+        selectedCompletedCore: [2.8, 4.8, 8.2],
+        selectedCompletedGlowWidth: [8.5, 13.8, 21],
+        selectedCompletedGlowOpacity: 0.22,
+        selectedCompletedGlowBlur: 9,
+        hoverCompletedCasing: [4, 6.6, 11.1],
+        hoverCompletedCore: [2.2, 3.8, 6.7],
+        hoverCompletedGlowWidth: [7.4, 11.6, 17.8],
+        hoverCompletedGlowOpacity: 0.18,
+        hoverCompletedGlowBlur: 8
+      }
+    };
+
+    const projects = window.mockProjects || [];
+    const UTM32_EPSG = "EPSG:25832";
+    const WGS84_EPSG = "EPSG:4326";
+    const defaultCenterUtm32 = [604000, 6695000];
+    const years = projects.flatMap(project => [project.år_fra, project.år_til || project.år_fra]);
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    const initialYear = Math.min(maxYear, Math.max(minYear, 2015));
+
+    const slider = document.getElementById("yearSlider");
+    const sidebarPanel = document.getElementById("sidebarPanel");
+    const sidebarTitle = document.getElementById("sidebarTitle");
+    const tabStrip = document.getElementById("tabStrip");
+    const yearText = document.getElementById("currentYear");
+    const topbarYearPill = document.getElementById("topbarYearPill");
+    const modeAllButton = document.getElementById("modeAllButton");
+    const modeTimelineButton = document.getElementById("modeTimelineButton");
+    const projectCountPill = document.getElementById("projectCountPill");
+    const projectYearPill = document.getElementById("projectYearPill");
+    const projectList = document.getElementById("projectList");
+    const detailPanel = document.getElementById("detailPanel");
+    const hoverStatsCard = document.getElementById("hoverStatsCard");
+    const selectedTab = document.getElementById("selectedTab");
+    const projectsTab = document.getElementById("projectsTab");
+    const layersTab = document.getElementById("layersTab");
+    const legendRows = document.getElementById("legendRows");
+    const legendCard = document.getElementById("legendCard");
+    const ticks = document.getElementById("ticks");
+    const caption = document.getElementById("timelineCaption");
+    const playButton = document.getElementById("playButton");
+    const resetButton = document.getElementById("resetButton");
+    const timelinePanel = document.querySelector(".timeline");
+    const cursorCoords = document.getElementById("cursorCoords");
+    const toggleCompleted = document.getElementById("toggleCompleted");
+    const toggleGlow = document.getElementById("toggleGlow");
+    const stylePresetGroup = document.getElementById("stylePresetGroup");
+    const styleCartographicButton = document.getElementById("styleCartographicButton");
+    const stylePresentationButton = document.getElementById("stylePresentationButton");
+
+    proj4.defs(UTM32_EPSG, "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs +type=crs");
+
+    function toLngLat(utm32) {
+      return proj4(UTM32_EPSG, WGS84_EPSG, utm32);
+    }
+
+    function toUtm32(lngLat) {
+      return proj4(WGS84_EPSG, UTM32_EPSG, lngLat);
+    }
+
+    function measurePolylineKm(geometry) {
+      if (!Array.isArray(geometry) || geometry.length < 2) {
+        return 0;
+      }
+
+      let totalMeters = 0;
+      for (let index = 1; index < geometry.length; index += 1) {
+        const [x1, y1] = geometry[index - 1];
+        const [x2, y2] = geometry[index];
+        totalMeters += Math.hypot(x2 - x1, y2 - y1);
+      }
+
+      return totalMeters / 1000;
+    }
+
+    const normalizedProjects = projects.map(project => {
+      const measuredLengthKm = measurePolylineKm(project.geometry_utm32);
+      const hasCsvLength = typeof project.length_km === "number" && Number.isFinite(project.length_km);
+      return {
+        ...project,
+        datakvalitet: project.datakvalitet || (project.rolle && project.rolle !== "Rolle ma fylles inn" ? "Bekreftet prosjektdata" : "Delvis kvalitetssikret"),
+        geometry_status: project.geometry_status || "Routed senterlinje",
+        geometry_kilde: project.geometry_kilde || "Forelopig vegfolgende geometri generert fra prosjektankere. Endelig NVDB/Vegkart-verifisering gjenstar.",
+        length_km: Number((hasCsvLength ? project.length_km : measuredLengthKm).toFixed(1)),
+        length_unit_label: project.length_unit_label || (project.prosjekttype === "bru" ? "bru" : "veg"),
+        kostnad_label: project.kostnad_label || "Ikke registrert",
+        geometryLngLat: project.geometry_utm32.map(toLngLat)
+      };
+    });
+
+    slider.min = minYear;
+    slider.max = maxYear;
+    slider.value = initialYear;
+
+    let currentYear = initialYear;
+    let viewMode = "all";
+    let selectedId = null;
+    let hoveredId = null;
+    let hoveredScreenPoint = null;
+    let playTimer = null;
+    let currentStyleId = "geodata-dark";
+    let styleFlipperControl = null;
+    let activeSidebarTab = "selected";
+    let map = null;
+    const layerState = {
+      completed: true,
+      glow: true,
+      routeStyle: "presentation"
+    };
+
+    const MAP_STYLES = {
+      "geodata-dark": {
+        label: "Geodata Kanvas Mork",
+        name: "Geodata Kanvas Mork",
+        code: "geodata-dark",
+        style: "https://services.geodataonline.no/arcgis/rest/services/GeocacheVector/GeocacheKanvasMork_WM/VectorTileServer/resources/styles/root.json"
+      },
+      "ofm-dark": {
+        label: "OpenFreeMap Dark",
+        name: "OpenFreeMap Dark",
+        code: "ofm-dark",
+        style: "https://tiles.openfreemap.org/styles/dark"
+      },
+      "carto-dark": {
+        label: "CARTO Dark",
+        name: "CARTO Dark",
+        code: "carto-dark",
+        style: {
+          version: 8,
+          sources: {
+            basemap: {
+              type: "raster",
+              tiles: [
+                "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+              ],
+              tileSize: 256,
+              attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+            }
+          },
+          layers: [
+            { id: "basemap", type: "raster", source: "basemap" }
+          ]
+        }
+      }
+    };
+
+    function createFeatureCollection(list) {
+      return {
+        type: "FeatureCollection",
+        features: list.map(project => ({
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: project.geometryLngLat
+          },
+          properties: {
+            id: project.id,
+            prosjektnavn: project.prosjektnavn,
+            vegnummer: project.vegnummer,
+            delstrekning: project.delstrekning,
+            år_fra: project.år_fra,
+            år_til: project.år_til,
+            rolle: project.rolle,
+            prosjekttype: project.prosjekttype,
+            description: project.beskrivelse_kort,
+            color: PROJECT_TYPE_META[project.prosjekttype]?.color || "#9ad1ff",
+            mutedColor: PROJECT_TYPE_META[project.prosjekttype]?.mutedColor || "#7f9ab1"
+          }
+        }))
+      };
+    }
+
+    function activeProjectsForYear(year) {
+      return normalizedProjects.filter(project => project.år_fra <= year && project.år_til >= year);
+    }
+
+    function completedProjectsForYear(year) {
+      return normalizedProjects.filter(project => project.år_til < year);
+    }
+
+    function buildLegend() {
+      const counts = normalizedProjects.reduce((accumulator, project) => {
+        accumulator[project.prosjekttype] = (accumulator[project.prosjekttype] || 0) + 1;
+        return accumulator;
+      }, {});
+
+      legendRows.innerHTML = Object.entries(PROJECT_TYPE_META).map(([key, meta]) => `
+        <div class="legend-row">
+          <div class="legend-left">
+            <span class="legend-chip" style="background:${meta.color}; color:${meta.color};"></span>
+            <span>${meta.label}</span>
+          </div>
+          <span class="muted">${counts[key] || 0}</span>
+        </div>
+      `).join("");
+    }
+
+    function buildTicks() {
+      const tickYears = [minYear, minYear + 10, minYear + 20, minYear + 30, maxYear].filter((year, index, list) => list.indexOf(year) === index);
+      ticks.innerHTML = tickYears.map(year => `<span>${year}</span>`).join("");
+    }
+
+    function applyViewModeState() {
+      const timelineActive = viewMode === "timeline";
+      modeAllButton.classList.toggle("active", !timelineActive);
+      modeTimelineButton.classList.toggle("active", timelineActive);
+      timelinePanel.classList.toggle("hidden", !timelineActive);
+      topbarYearPill.textContent = `År: ${currentYear}`;
+      topbarYearPill.style.display = timelineActive ? "" : "none";
+      toggleCompleted.disabled = !timelineActive;
+      toggleCompleted.closest(".layer-row").style.opacity = timelineActive ? "1" : "0.45";
+    }
+
+    function applyTabState() {
+      tabStrip.querySelectorAll("[data-tab]").forEach(button => {
+        button.classList.toggle("active", button.getAttribute("data-tab") === activeSidebarTab);
+      });
+      selectedTab.classList.toggle("active", activeSidebarTab === "selected");
+      projectsTab.classList.toggle("active", activeSidebarTab === "projects");
+      layersTab.classList.toggle("active", activeSidebarTab === "layers");
+
+      const titles = {
+        selected: "Prosjekt",
+        projects: "Prosjekter i visning",
+        layers: "Lag og visning"
+      };
+      sidebarTitle.textContent = titles[activeSidebarTab];
+    }
+
+    function setSidebarTab(tab) {
+      activeSidebarTab = tab;
+      applyTabState();
+    }
+
+    function visibleProjectsForYear(year) {
+      const activeProjects = viewMode === "timeline" ? activeProjectsForYear(year) : normalizedProjects;
+      const completedProjects = viewMode === "timeline" ? completedProjectsForYear(year) : [];
+      return { activeProjects, completedProjects, visibleProjects: [...activeProjects, ...completedProjects] };
+    }
+
+    function projectById(projectId) {
+      return normalizedProjects.find(project => project.id === projectId) || null;
+    }
+
+    function formatProjectYears(project) {
+      return project.år_fra === project.år_til ? String(project.år_fra) : `${project.år_fra}-${project.år_til}`;
+    }
+
+    function projectDurationYears(project) {
+      return Math.max(1, (project.år_til || project.år_fra) - project.år_fra + 1);
+    }
+
+    function positionHoverStats(point) {
+      if (!map || !point || !hoverStatsCard.classList.contains("visible")) {
+        return;
+      }
+
+      const mapRect = map.getContainer().getBoundingClientRect();
+      const cardWidth = hoverStatsCard.offsetWidth || 264;
+      const cardHeight = hoverStatsCard.offsetHeight || 120;
+      const offset = 18;
+      const padding = 10;
+
+      let left = mapRect.left + point.x + offset;
+      let top = mapRect.top + point.y + offset;
+
+      const maxLeft = mapRect.right - cardWidth - padding;
+      const maxTop = mapRect.bottom - cardHeight - padding;
+
+      if (left > maxLeft) {
+        left = mapRect.left + point.x - cardWidth - offset;
+      }
+      if (top > maxTop) {
+        top = mapRect.top + point.y - cardHeight - offset;
+      }
+
+      left = Math.max(mapRect.left + padding, Math.min(left, maxLeft));
+      top = Math.max(mapRect.top + padding, Math.min(top, maxTop));
+
+      hoverStatsCard.style.left = `${left}px`;
+      hoverStatsCard.style.top = `${top}px`;
+    }
+
+    function metricHeroHtml(project) {
+      return `
+        <div class="hover-hero detail-hero">
+          <div class="hover-period-stack">
+            <div class="hover-metric-disc" style="box-shadow: 0 0 24px rgba(137, 186, 255, 0.18);">
+              <div class="hover-metric-disc-inner">
+                <div class="hover-metric-disc-value">${projectDurationYears(project)}</div>
+                <div class="hover-metric-disc-label">År</div>
+              </div>
+            </div>
+            <div class="hover-metric-disc-range">${formatProjectYears(project)}</div>
+          </div>
+          <div class="hover-hero-copy">
+            <div class="hover-metric-kicker">Lengde ${project.length_unit_label}</div>
+            <div class="hover-metric-value">
+              ${project.length_km.toFixed(1)}
+              <span>km</span>
+            </div>
+            <div class="hover-metric-copy">${project.vegnummer} / ${project.delstrekning}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHoverStats() {
+      const project = projectById(hoveredId);
+      if (!project || !hoveredScreenPoint) {
+        hoverStatsCard.innerHTML = "";
+        hoverStatsCard.classList.remove("visible");
+        return;
+      }
+
+      const typeMeta = PROJECT_TYPE_META[project.prosjekttype] || PROJECT_TYPE_META.motorvei;
+      hoverStatsCard.innerHTML = `
+        <div class="hover-stats-head">
+          <div class="hover-stats-kicker">
+            <span class="badge-dot" style="background:${typeMeta.color};"></span>
+            <span>${typeMeta.label}</span>
+          </div>
+          <h3 class="hover-stats-title">${project.prosjektnavn}</h3>
+        </div>
+        ${metricHeroHtml(project)}
+        <div class="hover-stats-grid">
+          <div class="hover-stat">
+            <strong>Kostnad</strong>
+            <span>${project.kostnad_label}</span>
+          </div>
+          <div class="hover-stat">
+            <strong>Status</strong>
+            <span>${project.prosjektstatus || "Ikke registrert"}</span>
+          </div>
+          <div class="hover-stat">
+            <strong>Sted</strong>
+            <span>${project.sted}</span>
+          </div>
+        </div>
+      `;
+      hoverStatsCard.classList.add("visible");
+      positionHoverStats(hoveredScreenPoint);
+    }
+
+    function updateRouteFocusLayers() {
+      const emptyFilter = ["==", ["get", "id"], ""];
+      const selectedFilter = selectedId ? ["==", ["get", "id"], selectedId] : emptyFilter;
+      const hoveredFilter = hoveredId ? ["==", ["get", "id"], hoveredId] : emptyFilter;
+
+      [
+        "selected-route-glow",
+        "selected-route-casing",
+        "selected-route-core",
+        "selected-completed-route-glow",
+        "selected-completed-route-casing",
+        "selected-completed-route-core"
+      ].forEach(layerId => {
+        if (map && map.getLayer(layerId)) {
+          map.setFilter(layerId, selectedFilter);
+        }
+      });
+
+      [
+        "hover-route-glow",
+        "hover-route-casing",
+        "hover-route-core",
+        "hover-completed-route-glow",
+        "hover-completed-route-casing",
+        "hover-completed-route-core"
+      ].forEach(layerId => {
+        if (map && map.getLayer(layerId)) {
+          map.setFilter(layerId, hoveredFilter);
+        }
+      });
+    }
+
+    function setHoveredProject(projectId, point) {
+      const changedProject = hoveredId !== projectId;
+      hoveredId = projectId;
+      hoveredScreenPoint = point;
+
+      if (changedProject) {
+        updateRouteFocusLayers();
+        renderHoverStats();
+        return;
+      }
+
+      positionHoverStats(point);
+    }
+
+    function clearHoveredProject() {
+      if (!hoveredId) {
+        return;
+      }
+      hoveredId = null;
+      hoveredScreenPoint = null;
+      updateRouteFocusLayers();
+      renderHoverStats();
+    }
+
+    function applyLayerState() {
+      legendCard.style.display = "";
+
+      styleCartographicButton.classList.toggle("active", layerState.routeStyle === "cartographic");
+      stylePresentationButton.classList.toggle("active", layerState.routeStyle === "presentation");
+      applyRouteStylePreset();
+
+      ["completed-route-casing", "completed-routes"].forEach(layerId => {
+        if (map && map.getLayer(layerId)) {
+          map.setLayoutProperty(layerId, "visibility", layerState.completed ? "visible" : "none");
+        }
+      });
+
+      if (map && map.getLayer("active-routes-glow")) {
+        map.setLayoutProperty("active-routes-glow", "visibility", layerState.glow ? "visible" : "none");
+      }
+    }
+
+    function zoomInterpolation(stops) {
+      return [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        5, stops[0],
+        8, stops[1],
+        12, stops[2]
+      ];
+    }
+
+    function applyRouteStylePreset() {
+      if (!map) {
+        return;
+      }
+
+      const preset = ROUTE_STYLE_PRESETS[layerState.routeStyle];
+      if (!preset) {
+        return;
+      }
+
+      if (map.getLayer("completed-route-casing")) {
+        map.setPaintProperty("completed-route-casing", "line-width", zoomInterpolation(preset.completedCasing));
+      }
+      if (map.getLayer("completed-routes")) {
+        map.setPaintProperty("completed-routes", "line-width", zoomInterpolation(preset.completedCore));
+        map.setPaintProperty("completed-routes", "line-opacity", preset.completedOpacity);
+      }
+      if (map.getLayer("active-routes-casing")) {
+        map.setPaintProperty("active-routes-casing", "line-width", zoomInterpolation(preset.activeCasing));
+      }
+      if (map.getLayer("active-routes-glow")) {
+        map.setPaintProperty("active-routes-glow", "line-width", zoomInterpolation(preset.activeGlowWidth));
+        map.setPaintProperty("active-routes-glow", "line-opacity", preset.activeGlowOpacity);
+        map.setPaintProperty("active-routes-glow", "line-blur", preset.activeGlowBlur);
+      }
+      if (map.getLayer("active-routes")) {
+        map.setPaintProperty("active-routes", "line-width", zoomInterpolation(preset.activeCore));
+        map.setPaintProperty("active-routes", "line-opacity", preset.activeCoreOpacity);
+      }
+      if (map.getLayer("selected-route-glow")) {
+        map.setPaintProperty("selected-route-glow", "line-width", zoomInterpolation(preset.selectedGlowWidth));
+        map.setPaintProperty("selected-route-glow", "line-opacity", preset.selectedGlowOpacity);
+        map.setPaintProperty("selected-route-glow", "line-blur", preset.selectedGlowBlur);
+      }
+      if (map.getLayer("selected-route-casing")) {
+        map.setPaintProperty("selected-route-casing", "line-width", zoomInterpolation(preset.selectedCasing));
+      }
+      if (map.getLayer("selected-route-core")) {
+        map.setPaintProperty("selected-route-core", "line-width", zoomInterpolation(preset.selectedCore));
+      }
+      if (map.getLayer("hover-route-glow")) {
+        map.setPaintProperty("hover-route-glow", "line-width", zoomInterpolation(preset.hoverGlowWidth));
+        map.setPaintProperty("hover-route-glow", "line-opacity", preset.hoverGlowOpacity);
+        map.setPaintProperty("hover-route-glow", "line-blur", preset.hoverGlowBlur);
+      }
+      if (map.getLayer("hover-route-casing")) {
+        map.setPaintProperty("hover-route-casing", "line-width", zoomInterpolation(preset.hoverCasing));
+      }
+      if (map.getLayer("hover-route-core")) {
+        map.setPaintProperty("hover-route-core", "line-width", zoomInterpolation(preset.hoverCore));
+      }
+      if (map.getLayer("selected-completed-route-casing")) {
+        map.setPaintProperty("selected-completed-route-casing", "line-width", zoomInterpolation(preset.selectedCompletedCasing));
+      }
+      if (map.getLayer("selected-completed-route-glow")) {
+        map.setPaintProperty("selected-completed-route-glow", "line-width", zoomInterpolation(preset.selectedCompletedGlowWidth));
+        map.setPaintProperty("selected-completed-route-glow", "line-opacity", preset.selectedCompletedGlowOpacity);
+        map.setPaintProperty("selected-completed-route-glow", "line-blur", preset.selectedCompletedGlowBlur);
+      }
+      if (map.getLayer("selected-completed-route-core")) {
+        map.setPaintProperty("selected-completed-route-core", "line-width", zoomInterpolation(preset.selectedCompletedCore));
+      }
+      if (map.getLayer("hover-completed-route-glow")) {
+        map.setPaintProperty("hover-completed-route-glow", "line-width", zoomInterpolation(preset.hoverCompletedGlowWidth));
+        map.setPaintProperty("hover-completed-route-glow", "line-opacity", preset.hoverCompletedGlowOpacity);
+        map.setPaintProperty("hover-completed-route-glow", "line-blur", preset.hoverCompletedGlowBlur);
+      }
+      if (map.getLayer("hover-completed-route-casing")) {
+        map.setPaintProperty("hover-completed-route-casing", "line-width", zoomInterpolation(preset.hoverCompletedCasing));
+      }
+      if (map.getLayer("hover-completed-route-core")) {
+        map.setPaintProperty("hover-completed-route-core", "line-width", zoomInterpolation(preset.hoverCompletedCore));
+      }
+    }
+
+    function fitToProject(project) {
+      if (!project) {
+        return;
+      }
+
+      const bounds = new maplibregl.LngLatBounds(project.geometryLngLat[0], project.geometryLngLat[0]);
+      project.geometryLngLat.forEach(coordinate => bounds.extend(coordinate));
+      map.fitBounds(bounds, { padding: { top: 70, right: 70, bottom: 70, left: 50 }, duration: 900 });
+    }
+
+    function fitToProjects(projectsToFit) {
+      if (!map || !projectsToFit.length) {
+        return;
+      }
+
+      const bounds = new maplibregl.LngLatBounds(projectsToFit[0].geometryLngLat[0], projectsToFit[0].geometryLngLat[0]);
+      projectsToFit.forEach(project => {
+        project.geometryLngLat.forEach(coordinate => bounds.extend(coordinate));
+      });
+
+      map.fitBounds(bounds, { padding: { top: 70, right: 70, bottom: 70, left: 50 }, duration: 900 });
+    }
+
+    function getInspectorState() {
+      if (selectedId) {
+        return {
+          mode: "selected",
+          project: projectById(selectedId)
+        };
+      }
+
+      return {
+        mode: "empty",
+        project: null
+      };
+    }
+
+    function detailHtml({ mode, project }) {
+      if (!project) {
+        return `
+          <div class="inspector-context">
+            <span class="inspector-state">Ingen valgt</span>
+            <p class="inspector-hint">Pek på eller klikk på en strekning i kartet for å se prosjektinformasjon her.</p>
+          </div>
+          <div class="detail-heading">
+            <h3>Ingen prosjekt valgt</h3>
+            <p class="detail-copy">Panelet brukes som en lett inspektorflate for det du peker på eller velger i kartet.</p>
+          </div>
+        `;
+      }
+
+      const typeMeta = PROJECT_TYPE_META[project.prosjekttype] || PROJECT_TYPE_META.motorvei;
+      const inspectorLabel = "Valgt prosjekt";
+      const inspectorHint = "Klikk i kartet eller i prosjektlisten for å bytte valgt prosjekt.";
+      const sourceAction = project.source_url
+        ? `<a class="link-btn" href="${project.source_url}" target="_blank" rel="noopener">${project.source_label || "Apne kilde"}</a>`
+        : "";
+      const vegkartAction = project.vegkart_url
+        ? `<a class="link-btn secondary" href="${project.vegkart_url}" target="_blank" rel="noopener">Apne i Vegkart</a>`
+        : "";
+      return `
+        <div class="inspector-context">
+          <span class="inspector-state ${mode}">
+            <span class="badge-dot" style="background:${typeMeta.color};"></span>
+            <span>${inspectorLabel}</span>
+          </span>
+          <p class="inspector-hint">${inspectorHint}</p>
+        </div>
+        <div class="detail-heading">
+          <div class="detail-kicker">
+            <span>${typeMeta.label}</span>
+            <span>${project.vegnummer}</span>
+          </div>
+          <h3>${project.prosjektnavn}</h3>
+          <p class="detail-copy">${project.beskrivelse_kort}</p>
+        </div>
+        ${metricHeroHtml(project)}
+        <div class="detail-mini-stats">
+          <div class="hover-stat">
+            <strong>Kostnad</strong>
+            <span>${project.kostnad_label}</span>
+          </div>
+          <div class="hover-stat">
+            <strong>Status</strong>
+            <span>${project.prosjektstatus || "Ikke registrert"}</span>
+          </div>
+        </div>
+        <div class="detail-keyfacts">
+          <div class="detail-keyfact">
+            <strong>Veg</strong>
+            <span>${project.vegnummer} / ${project.delstrekning}</span>
+          </div>
+          <div class="detail-keyfact">
+            <strong>Periode</strong>
+            <span>${project.år_fra}-${project.år_til}</span>
+          </div>
+          <div class="detail-keyfact">
+            <strong>Prosjekttype</strong>
+            <span>${typeMeta.label}</span>
+          </div>
+        </div>
+        <div class="detail-secondary">
+          <div class="detail-secondary-row">
+            <strong>Sted</strong>
+            <span>${project.sted}</span>
+          </div>
+          <div class="detail-secondary-row">
+            <strong>Rolle</strong>
+            <span>${project.rolle || "Ikke registrert"}</span>
+          </div>
+          <div class="detail-secondary-row">
+            <strong>Kilde</strong>
+            <span>${project.kilde || "Ikke angitt"}</span>
+          </div>
+        </div>
+        <details class="detail-disclosure">
+          <summary>Datagrunnlag</summary>
+          <p><strong>Datakvalitet:</strong> ${project.datakvalitet}</p>
+          <p><strong>Geometri:</strong> ${project.geometry_status}</p>
+          <p><strong>Geometrikilde:</strong> ${project.geometry_kilde}</p>
+        </details>
+        <div class="detail-actions">
+          ${sourceAction}
+          ${vegkartAction}
+          <button class="link-btn secondary" type="button" id="detailZoomButton">Zoom til prosjekt</button>
+        </div>
+      `;
+    }
+
+    function renderDetailPanel() {
+      const inspectorState = getInspectorState();
+      const project = inspectorState.project;
+      detailPanel.innerHTML = detailHtml(inspectorState);
+
+      const zoomButton = document.getElementById("detailZoomButton");
+      if (zoomButton && project) {
+        zoomButton.addEventListener("click", () => {
+          fitToProject(project);
+        });
+      }
+    }
+
+    function renderList(activeProjects) {
+      if (!activeProjects.length) {
+        const emptyCopy = viewMode === "timeline"
+          ? `Ingen prosjekter er aktive i ${currentYear}. Dra tidslinjen videre eller bruk avspilling for a se utviklingen.`
+          : "Ingen prosjekter er tilgjengelige i den valgte visningen.";
+        projectList.innerHTML = `<p class="empty">${emptyCopy}</p>`;
+        return;
+      }
+
+      projectList.innerHTML = activeProjects
+        .sort((a, b) => b.prioritet - a.prioritet || a.år_fra - b.år_fra)
+        .map(project => {
+          const meta = PROJECT_TYPE_META[project.prosjekttype] || PROJECT_TYPE_META.motorvei;
+          return `
+            <article class="project-card ${project.id === selectedId ? "active" : ""}" data-project-id="${project.id}">
+              <h3>${project.prosjektnavn}</h3>
+              <p>${project.beskrivelse_kort}</p>
+              <div class="meta">
+                <span class="badge"><span class="badge-dot" style="background:${meta.color};"></span>${meta.label}</span>
+                <span class="badge">${project.år_fra}-${project.år_til}</span>
+                <span class="badge">${project.prosjektstatus || project.rolle || "Status ikke registrert"}</span>
+              </div>
+              <p>${project.vegnummer} / ${project.delstrekning} · ${project.sted}</p>
+              ${project.source_url
+                ? `<div class="actions"><a class="link-btn" href="${project.source_url}" target="_blank" rel="noopener">${project.source_label || "Apne kilde"}</a></div>`
+                : ""}
+            </article>
+          `;
+        })
+        .join("");
+
+      projectList.querySelectorAll("[data-project-id]").forEach(card => {
+        card.addEventListener("click", () => {
+          selectedId = card.getAttribute("data-project-id");
+          const project = normalizedProjects.find(item => item.id === selectedId);
+          setSidebarTab("selected");
+          fitToProject(project);
+          render(currentYear);
+        });
+      });
+    }
+
+    function render(year) {
+      currentYear = Number(year);
+      const timelineActive = viewMode === "timeline";
+      const { activeProjects, completedProjects, visibleProjects } = visibleProjectsForYear(currentYear);
+      const activeFeatureCollection = createFeatureCollection(activeProjects);
+      const completedFeatureCollection = createFeatureCollection(completedProjects);
+
+      yearText.textContent = timelineActive ? String(currentYear) : "Alle";
+      projectYearPill.textContent = `År: ${currentYear}`;
+      projectCountPill.textContent = timelineActive ? `Aktive: ${activeProjects.length}` : `Prosjekter: ${activeProjects.length}`;
+      projectYearPill.style.display = timelineActive ? "" : "none";
+
+      if (!visibleProjects.find(project => project.id === selectedId)) {
+        selectedId = null;
+      }
+
+      if (!visibleProjects.find(project => project.id === hoveredId)) {
+        hoveredId = null;
+      }
+
+      caption.textContent = timelineActive
+        ? (activeProjects.length
+          ? `Viser ${activeProjects.length} prosjekter som er aktive i ${currentYear}.`
+          : `Ingen prosjekter er aktive i ${currentYear}; bruk tidslinjen for a bevege deg gjennom portefoljen.`)
+        : `Viser hele prosjektportefoljen samlet pa kartet.`;
+
+      renderDetailPanel();
+      renderHoverStats();
+      renderList(activeProjects);
+      applyViewModeState();
+      applyLayerState();
+
+      if (map && map.getSource("completed-routes")) {
+        map.getSource("completed-routes").setData(completedFeatureCollection);
+      }
+
+      if (map && map.getSource("active-routes")) {
+        map.getSource("active-routes").setData(activeFeatureCollection);
+      }
+
+      updateRouteFocusLayers();
+    }
+
+    function togglePlayback() {
+      if (playTimer) {
+        window.clearInterval(playTimer);
+        playTimer = null;
+        playButton.textContent = "▶";
+        return;
+      }
+
+      playButton.textContent = "❚❚";
+      playTimer = window.setInterval(() => {
+        const nextYear = currentYear >= maxYear ? minYear : currentYear + 1;
+        slider.value = String(nextYear);
+        render(nextYear);
+      }, 1000);
+    }
+
+    function ensureProjectLayers() {
+      if (!map.getSource("completed-routes")) {
+        map.addSource("completed-routes", { type: "geojson", data: createFeatureCollection([]) });
+      }
+
+      if (!map.getSource("active-routes")) {
+        map.addSource("active-routes", { type: "geojson", data: createFeatureCollection([]) });
+      }
+
+      if (!map.getLayer("completed-route-casing")) {
+        map.addLayer({
+          id: "completed-route-casing",
+          type: "line",
+          source: "completed-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": "rgba(5, 10, 18, 0.78)",
+            "line-opacity": 0.5,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].completedCasing)
+          }
+        });
+      }
+
+      if (!map.getLayer("completed-routes")) {
+        map.addLayer({
+          id: "completed-routes",
+          type: "line",
+          source: "completed-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": ["get", "mutedColor"],
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].completedOpacity,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].completedCore),
+            "line-dasharray": [1.1, 1.35]
+          }
+        });
+      }
+
+      if (!map.getLayer("active-routes-casing")) {
+        map.addLayer({
+          id: "active-routes-casing",
+          type: "line",
+          source: "active-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": "rgba(5, 10, 18, 0.96)",
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].activeCasing),
+            "line-opacity": 0.96
+          }
+        });
+      }
+
+      if (!map.getLayer("active-routes-glow")) {
+        map.addLayer({
+          id: "active-routes-glow",
+          type: "line",
+          source: "active-routes",
+          paint: {
+            "line-color": ["get", "mutedColor"],
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].activeGlowOpacity,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].activeGlowWidth),
+            "line-blur": ROUTE_STYLE_PRESETS[layerState.routeStyle].activeGlowBlur
+          }
+        });
+      }
+
+      if (!map.getLayer("active-routes")) {
+        map.addLayer({
+          id: "active-routes",
+          type: "line",
+          source: "active-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": ["get", "mutedColor"],
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].activeCore),
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].activeCoreOpacity
+          }
+        });
+      }
+
+      if (!map.getLayer("selected-route-glow")) {
+        map.addLayer({
+          id: "selected-route-glow",
+          type: "line",
+          source: "active-routes",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedGlowOpacity,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedGlowWidth),
+            "line-blur": ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedGlowBlur
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("selected-route-casing")) {
+        map.addLayer({
+          id: "selected-route-casing",
+          type: "line",
+          source: "active-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": "#ffffff",
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCasing),
+            "line-opacity": 0.92
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("selected-route-core")) {
+        map.addLayer({
+          id: "selected-route-core",
+          type: "line",
+          source: "active-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCore),
+            "line-opacity": 1
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("hover-route-glow")) {
+        map.addLayer({
+          id: "hover-route-glow",
+          type: "line",
+          source: "active-routes",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverGlowOpacity,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverGlowWidth),
+            "line-blur": ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverGlowBlur
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("hover-route-casing")) {
+        map.addLayer({
+          id: "hover-route-casing",
+          type: "line",
+          source: "active-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": "rgba(228, 241, 255, 0.92)",
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCasing),
+            "line-opacity": 0.9
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("hover-route-core")) {
+        map.addLayer({
+          id: "hover-route-core",
+          type: "line",
+          source: "active-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCore),
+            "line-opacity": 1
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("selected-completed-route-glow")) {
+        map.addLayer({
+          id: "selected-completed-route-glow",
+          type: "line",
+          source: "completed-routes",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCompletedGlowOpacity,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCompletedGlowWidth),
+            "line-blur": ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCompletedGlowBlur
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("selected-completed-route-casing")) {
+        map.addLayer({
+          id: "selected-completed-route-casing",
+          type: "line",
+          source: "completed-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": "#ffffff",
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCompletedCasing),
+            "line-opacity": 0.82
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("selected-completed-route-core")) {
+        map.addLayer({
+          id: "selected-completed-route-core",
+          type: "line",
+          source: "completed-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].selectedCompletedCore),
+            "line-opacity": 0.9
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("hover-completed-route-glow")) {
+        map.addLayer({
+          id: "hover-completed-route-glow",
+          type: "line",
+          source: "completed-routes",
+          paint: {
+            "line-color": ["get", "color"],
+            "line-opacity": ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCompletedGlowOpacity,
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCompletedGlowWidth),
+            "line-blur": ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCompletedGlowBlur
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("hover-completed-route-casing")) {
+        map.addLayer({
+          id: "hover-completed-route-casing",
+          type: "line",
+          source: "completed-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": "rgba(228, 241, 255, 0.78)",
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCompletedCasing),
+            "line-opacity": 0.72
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+
+      if (!map.getLayer("hover-completed-route-core")) {
+        map.addLayer({
+          id: "hover-completed-route-core",
+          type: "line",
+          source: "completed-routes",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": zoomInterpolation(ROUTE_STYLE_PRESETS[layerState.routeStyle].hoverCompletedCore),
+            "line-opacity": 0.82
+          },
+          filter: ["==", ["get", "id"], ""]
+        });
+      }
+    }
+
+    function ensureStyleFlipper() {
+      if (styleFlipperControl || typeof StyleFlipperControl !== "function") {
+        return;
+      }
+
+      const pluginStyles = Object.fromEntries(
+        Object.entries(MAP_STYLES).map(([key, value]) => [key, {
+          code: value.code,
+          name: value.name,
+          url: value.style
+        }])
+      );
+
+      styleFlipperControl = new StyleFlipperControl(pluginStyles, (_styleClass, styleCode) => {
+        currentStyleId = styleCode;
+      });
+      styleFlipperControl.setCurrentStyleCode(currentStyleId);
+      map.addControl(styleFlipperControl, "top-left");
+    }
+
+    buildLegend();
+    buildTicks();
+    applyViewModeState();
+    render(currentYear);
+
+    map = new maplibregl.Map({
+      container: "map",
+      style: MAP_STYLES[currentStyleId].style,
+      center: toLngLat(defaultCenterUtm32),
+      zoom: 6.35,
+      pitch: 0,
+      bearing: 0,
+      attributionControl: false
+    });
+
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), "top-right");
+    map.addControl(new maplibregl.AttributionControl({ compact: true }));
+
+    function bindProjectInteractions() {
+      const interactiveLayers = [
+        "selected-route-core",
+        "selected-completed-route-core",
+        "active-routes",
+        "completed-routes"
+      ];
+      const hitPadding = 10;
+
+      function queryInteractiveFeature(point) {
+        const queryBox = [
+          [point.x - hitPadding, point.y - hitPadding],
+          [point.x + hitPadding, point.y + hitPadding]
+        ];
+        return map.queryRenderedFeatures(queryBox, { layers: interactiveLayers })[0];
+      }
+
+      map.on("click", event => {
+        const feature = queryInteractiveFeature(event.point);
+        if (!feature) {
+          return;
+        }
+
+        selectedId = feature.properties.id;
+        const project = projectById(selectedId);
+        setSidebarTab("selected");
+        fitToProject(project);
+        render(currentYear);
+      });
+
+      map.on("mousemove", event => {
+        const [easting, northing] = toUtm32([event.lngLat.lng, event.lngLat.lat]).map(value => Math.round(value));
+        cursorCoords.textContent = `E ${easting} · N ${northing}`;
+
+        const feature = queryInteractiveFeature(event.point);
+        if (!feature) {
+          map.getCanvas().style.cursor = "";
+          clearHoveredProject();
+          return;
+        }
+
+        map.getCanvas().style.cursor = "pointer";
+        setHoveredProject(feature.properties.id, event.point);
+      });
+    }
+
+    map.on("load", () => {
+      ensureStyleFlipper();
+      ensureProjectLayers();
+      bindProjectInteractions();
+      render(currentYear);
+      if (viewMode === "all") {
+        fitToProjects(normalizedProjects);
+      }
+    });
+
+    map.on("style.load", () => {
+      ensureProjectLayers();
+      render(currentYear);
+    });
+    applyTabState();
+
+    tabStrip.querySelectorAll("[data-tab]").forEach(button => {
+      button.addEventListener("click", () => {
+        setSidebarTab(button.getAttribute("data-tab"));
+      });
+    });
+
+    modeAllButton.addEventListener("click", () => {
+      if (playTimer) {
+        togglePlayback();
+      }
+      viewMode = "all";
+      render(currentYear);
+      fitToProjects(normalizedProjects);
+    });
+
+    modeTimelineButton.addEventListener("click", () => {
+      viewMode = "timeline";
+      render(currentYear);
+    });
+
+    toggleCompleted.addEventListener("change", event => {
+      layerState.completed = event.target.checked;
+      applyLayerState();
+    });
+
+    toggleGlow.addEventListener("change", event => {
+      layerState.glow = event.target.checked;
+      applyLayerState();
+    });
+
+    stylePresetGroup.addEventListener("click", event => {
+      const button = event.target.closest(".style-preset-btn");
+      if (!button) {
+        return;
+      }
+
+      layerState.routeStyle = button.id === "styleCartographicButton" ? "cartographic" : "presentation";
+      applyRouteStylePreset();
+      applyLayerState();
+    });
+
+    slider.addEventListener("input", event => {
+      render(event.target.value);
+    });
+
+    playButton.addEventListener("click", togglePlayback);
+
+    resetButton.addEventListener("click", () => {
+      if (playTimer) {
+        togglePlayback();
+      }
+      slider.value = String(minYear);
+      selectedId = null;
+      viewMode = "timeline";
+      map.flyTo({ center: toLngLat(defaultCenterUtm32), zoom: 6.35, pitch: 0, bearing: 0, duration: 900 });
+      render(minYear);
+    });
+</script>
+</body>
+</html>
