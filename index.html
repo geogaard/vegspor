@@ -123,8 +123,7 @@
       min-width: 0;
     }
 
-    .title-card,
-    .view-switcher {
+    .title-card {
       pointer-events: auto;
       background:
         linear-gradient(180deg, rgba(154, 209, 255, 0.08), rgba(255, 255, 255, 0.015)),
@@ -180,57 +179,7 @@
       font-weight: 700;
     }
 
-    .topbar-right {
-      position: absolute;
-      top: 0;
-      right: calc(var(--sidebar-width) + var(--gap) + 22px);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      margin-right: calc(var(--sidebar-width) + var(--gap));
-    }
-
-    .meta-stack,
-    .mode-toggle {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    .view-switcher {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px;
-    }
-
-    .mode-toggle {
-      gap: 6px;
-    }
-
-    .mode-btn {
-      padding: 7px 11px;
-      border-radius: 11px;
-      color: var(--muted);
-      background: transparent;
-      border: 1px solid transparent;
-      font-size: 0.74rem;
-      font-weight: 600;
-      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    }
-
-    .mode-btn.active {
-      color: var(--text);
-      background: rgba(154, 209, 255, 0.12);
-      border-color: rgba(154, 209, 255, 0.28);
-    }
-
     .sidebar h2,
-    .timeline h2,
     .legend-card h3 {
       margin: 0 0 10px;
       font-size: 0.72rem;
@@ -670,122 +619,10 @@
       background: rgba(255, 255, 255, 0.02);
     }
 
-    .timeline {
-      grid-column: 1 / 3;
-      grid-row: 3;
-      padding: 12px 14px;
-      align-self: end;
-      background:
-        linear-gradient(180deg, rgba(154, 209, 255, 0.04), transparent 55%),
-        var(--panel);
-    }
-
-    .timeline.hidden {
-      display: none;
-    }
-
-    .timeline-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 8px;
-    }
-
-    .year-readout {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .year-readout strong {
-      font-size: clamp(1.35rem, 1.6vw, 1.8rem);
-      line-height: 1;
-      letter-spacing: -0.06em;
-    }
-
-    .year-readout span {
-      color: var(--muted);
-      font-size: 0.82rem;
-      max-width: 22rem;
-    }
-
-    .timeline-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     button {
       border: 0;
       cursor: pointer;
       font: inherit;
-    }
-
-    .play {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      color: var(--bg);
-      background: linear-gradient(135deg, var(--accent), #dff6ff);
-      box-shadow: 0 12px 25px rgba(154, 209, 255, 0.25);
-    }
-
-    .ghost {
-      padding: 10px 12px;
-      border-radius: 12px;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .timeline-mobile-toggle {
-      display: none;
-    }
-
-    .slider-wrap {
-      position: relative;
-      margin-top: 10px;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      appearance: none;
-      height: 6px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(154, 209, 255, 0.7));
-      outline: none;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      appearance: none;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 3px solid #fff;
-      background: var(--accent-2);
-      box-shadow: 0 0 0 6px rgba(255, 184, 92, 0.18);
-    }
-
-    input[type="range"]::-moz-range-thumb {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 3px solid #fff;
-      background: var(--accent-2);
-      box-shadow: 0 0 0 6px rgba(255, 184, 92, 0.18);
-    }
-
-    .ticks {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      color: var(--dim);
-      font-size: 0.72rem;
-      margin-top: 8px;
     }
 
     .layer-panel {
@@ -1194,6 +1031,20 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+      background: rgba(8, 17, 29, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib.maplibregl-compact {
+      min-height: 32px;
+      padding: 0;
+    }
+
     @media (max-width: 1120px) {
       body {
         overflow: auto;
@@ -1213,7 +1064,6 @@
         padding-bottom: 120px;
       }
 
-      .timeline,
       .topbar,
       .sidebar {
         width: 100%;
@@ -1223,18 +1073,7 @@
         flex-direction: column;
       }
 
-      .topbar-right,
-      .meta-stack {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .topbar-right {
-        position: static;
-      }
-
-      .title-card,
-      .view-switcher {
+      .title-card {
         width: 100%;
       }
 
@@ -1287,20 +1126,11 @@
         gap: 10px;
       }
 
-      .topbar-left,
-      .topbar-right,
-      .meta-stack,
-      .mode-toggle {
+      .topbar-left {
         width: 100%;
       }
 
-      .topbar-right {
-        position: static;
-        margin-right: 0;
-      }
-
-      .title-card,
-      .view-switcher {
+      .title-card {
         width: 100%;
       }
 
@@ -1310,10 +1140,6 @@
 
       .topbar p {
         max-width: none;
-      }
-
-      .mode-btn {
-        flex: 1;
       }
 
       .sidebar {
@@ -1357,85 +1183,6 @@
         display: none;
       }
 
-      .timeline {
-        position: fixed;
-        left: 12px;
-        right: 12px;
-        bottom: calc(var(--mobile-sheet-offset) + env(safe-area-inset-bottom, 0px) + 16px);
-        z-index: 21;
-        padding: 10px 12px;
-      }
-
-      .timeline[data-mobile-state="collapsed"] {
-        padding: 9px 10px;
-      }
-
-      .timeline-top {
-        align-items: flex-start;
-        gap: 12px;
-      }
-
-      .timeline-controls {
-        gap: 8px;
-      }
-
-      .play {
-        width: 36px;
-        height: 36px;
-      }
-
-      .ghost {
-        padding: 9px 11px;
-        border-radius: 10px;
-      }
-
-      .year-readout {
-        gap: 8px;
-      }
-
-      .year-readout strong {
-        font-size: 1.1rem;
-      }
-
-      .year-readout span {
-        font-size: 0.72rem;
-        max-width: none;
-      }
-
-      .ticks {
-        gap: 4px;
-        font-size: 0.62rem;
-      }
-
-      .timeline-mobile-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 38px;
-        min-height: 36px;
-        padding: 0 10px;
-        border-radius: 10px;
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        font-size: 0.78rem;
-        font-weight: 700;
-      }
-
-      .timeline[data-mobile-state="collapsed"] .timeline-top {
-        margin-bottom: 0;
-      }
-
-      .timeline[data-mobile-state="collapsed"] .slider-wrap,
-      .timeline[data-mobile-state="collapsed"] .ticks,
-      .timeline[data-mobile-state="collapsed"] #timelineCaption {
-        display: none;
-      }
-
-      .timeline[data-mobile-state="collapsed"] .year-readout strong {
-        font-size: 1rem;
-      }
-
       .hover-stats {
         display: none !important;
       }
@@ -1472,19 +1219,8 @@
           <div class="eyebrow">Vegspor</div>
           <h1>Vegspor</h1>
           <p>
-            Kartet skal lese prosjektene forst. Sidepanelet og tidslinjen skal bare gi kontroll.
+            Kartet skal lese prosjektene først. Prosjektpanelet skal bare gi kontroll og detaljer.
           </p>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <div class="view-switcher">
-          <div class="mode-toggle">
-            <button id="modeAllButton" class="mode-btn active" type="button">Alle prosjekter</button>
-            <button id="modeTimelineButton" class="mode-btn" type="button">Tidslinje</button>
-          </div>
-          <div class="meta-stack">
-            <div class="pill" id="topbarYearPill">Alle</div>
-          </div>
         </div>
       </div>
     </section>
@@ -1513,8 +1249,7 @@
         </section>
         <section id="projectsTab" class="tab-panel">
           <div class="sidebar-meta projects-summary">
-            <div class="pill" id="projectCountPill">Aktive: 0</div>
-            <div class="pill" id="projectYearPill">År: -</div>
+            <div class="pill" id="projectCountPill">Prosjekter: 0</div>
           </div>
           <div id="projectList" class="project-list"></div>
         </section>
@@ -1532,16 +1267,6 @@
               <div class="style-preset-group" id="stylePresetGroup">
                 <button id="styleCartographicButton" class="style-preset-btn" type="button">Kartografisk</button>
                 <button id="stylePresentationButton" class="style-preset-btn active" type="button">Presentasjon</button>
-              </div>
-              <div class="layer-row">
-                <label for="toggleCompleted">
-                  <strong>Fullførte prosjekter</strong>
-                  <span>Vis historiske strekninger som dempet kontekst.</span>
-                </label>
-                <label class="switch">
-                  <input id="toggleCompleted" type="checkbox" checked />
-                  <span class="slider-switch"></span>
-                </label>
               </div>
               <div class="layer-row">
                 <label for="toggleGlow">
@@ -1567,26 +1292,6 @@
       </div>
     </aside>
 
-    <section class="panel timeline">
-      <div class="timeline-top">
-        <div>
-          <h2>Tidslinje</h2>
-          <div class="year-readout">
-            <strong id="currentYear">0</strong>
-            <span id="timelineCaption">Viser prosjekter som er aktive i valgt år.</span>
-          </div>
-        </div>
-        <div class="timeline-controls">
-          <button id="timelineToggleButton" class="timeline-mobile-toggle" type="button" aria-expanded="true" aria-controls="yearSlider">▾</button>
-          <button id="playButton" class="play" aria-label="Spill av tidslinje">▶</button>
-          <button id="resetButton" class="ghost">Til start</button>
-        </div>
-      </div>
-      <div class="slider-wrap">
-        <input id="yearSlider" type="range" min="0" max="0" value="0" step="1" />
-        <div id="ticks" class="ticks"></div>
-      </div>
-    </section>
   </div>
 
   <script src="./mock-projects.js"></script>
@@ -1673,16 +1378,10 @@
     const maxYear = Math.max(...years);
     const initialYear = Math.min(maxYear, Math.max(minYear, 2015));
 
-    const slider = document.getElementById("yearSlider");
     const sidebarPanel = document.getElementById("sidebarPanel");
     const sidebarTitle = document.getElementById("sidebarTitle");
     const tabStrip = document.getElementById("tabStrip");
-    const yearText = document.getElementById("currentYear");
-    const topbarYearPill = document.getElementById("topbarYearPill");
-    const modeAllButton = document.getElementById("modeAllButton");
-    const modeTimelineButton = document.getElementById("modeTimelineButton");
     const projectCountPill = document.getElementById("projectCountPill");
-    const projectYearPill = document.getElementById("projectYearPill");
     const projectList = document.getElementById("projectList");
     const detailPanel = document.getElementById("detailPanel");
     const hoverStatsCard = document.getElementById("hoverStatsCard");
@@ -1691,14 +1390,7 @@
     const layersTab = document.getElementById("layersTab");
     const legendRows = document.getElementById("legendRows");
     const legendCard = document.getElementById("legendCard");
-    const ticks = document.getElementById("ticks");
-    const caption = document.getElementById("timelineCaption");
-    const playButton = document.getElementById("playButton");
-    const resetButton = document.getElementById("resetButton");
-    const timelineToggleButton = document.getElementById("timelineToggleButton");
-    const timelinePanel = document.querySelector(".timeline");
     const cursorCoords = document.getElementById("cursorCoords");
-    const toggleCompleted = document.getElementById("toggleCompleted");
     const toggleGlow = document.getElementById("toggleGlow");
     const stylePresetGroup = document.getElementById("stylePresetGroup");
     const styleCartographicButton = document.getElementById("styleCartographicButton");
@@ -1747,29 +1439,21 @@
       };
     });
 
-    slider.min = minYear;
-    slider.max = maxYear;
-    slider.value = initialYear;
-
     function clampNumber(value, min, max) {
       return Math.min(max, Math.max(min, value));
     }
 
     let currentYear = initialYear;
-    let viewMode = "all";
     let selectedId = null;
     let hoveredId = null;
     let hoveredScreenPoint = null;
-    let playTimer = null;
     let currentStyleId = "geodata-dark";
     let styleFlipperControl = null;
     let activeSidebarTab = "selected";
     let isMobileViewport = mobileViewportQuery.matches;
-    let mobileSheetState = "half";
-    let mobileTimelineState = "expanded";
+    let mobileSheetState = "peek";
     let map = null;
     const layerState = {
-      completed: true,
       glow: true,
       routeStyle: "presentation"
     };
@@ -1836,14 +1520,6 @@
       };
     }
 
-    function activeProjectsForYear(year) {
-      return normalizedProjects.filter(project => project.år_fra <= year && project.år_til >= year);
-    }
-
-    function completedProjectsForYear(year) {
-      return normalizedProjects.filter(project => project.år_til < year);
-    }
-
     function buildLegend() {
       const counts = normalizedProjects.reduce((accumulator, project) => {
         accumulator[project.prosjekttype] = (accumulator[project.prosjekttype] || 0) + 1;
@@ -1859,11 +1535,6 @@
           <span class="muted">${counts[key] || 0}</span>
         </div>
       `).join("");
-    }
-
-    function buildTicks() {
-      const tickYears = [minYear, minYear + 10, minYear + 20, minYear + 30, maxYear].filter((year, index, list) => list.indexOf(year) === index);
-      ticks.innerHTML = tickYears.map(year => `<span>${year}</span>`).join("");
     }
 
     function getMobileSheetHeightForState(state) {
@@ -1940,8 +1611,7 @@
       isMobileViewport = mobileViewportQuery.matches;
 
       if (isMobileViewport && !wasMobile) {
-        mobileSheetState = selectedId ? "full" : "half";
-        mobileTimelineState = viewMode === "timeline" ? "expanded" : "collapsed";
+        mobileSheetState = selectedId ? "full" : "peek";
       }
 
       if (!isMobileViewport && wasMobile) {
@@ -1949,36 +1619,11 @@
         hoveredScreenPoint = null;
       }
 
-      applyMobileTimelineState();
       applyMobileSheetState();
       renderHoverStats();
       if (map) {
         map.resize();
       }
-    }
-
-    function applyMobileTimelineState() {
-      const shouldCollapse = !isMobileViewport || viewMode !== "timeline" ? "expanded" : mobileTimelineState;
-      timelinePanel.dataset.mobileState = shouldCollapse;
-
-      if (timelineToggleButton) {
-        const expanded = shouldCollapse !== "collapsed";
-        timelineToggleButton.setAttribute("aria-expanded", String(expanded));
-        timelineToggleButton.textContent = expanded ? "▾" : "▴";
-        timelineToggleButton.style.display = isMobileViewport && viewMode === "timeline" ? "inline-flex" : "none";
-      }
-    }
-
-    function applyViewModeState() {
-      const timelineActive = viewMode === "timeline";
-      modeAllButton.classList.toggle("active", !timelineActive);
-      modeTimelineButton.classList.toggle("active", timelineActive);
-      timelinePanel.classList.toggle("hidden", !timelineActive);
-      topbarYearPill.textContent = `År: ${currentYear}`;
-      topbarYearPill.style.display = timelineActive ? "" : "none";
-      toggleCompleted.disabled = !timelineActive;
-      toggleCompleted.closest(".layer-row").style.opacity = timelineActive ? "1" : "0.45";
-      applyMobileTimelineState();
     }
 
     function applyTabState() {
@@ -2008,9 +1653,11 @@
     }
 
     function visibleProjectsForYear(year) {
-      const activeProjects = viewMode === "timeline" ? activeProjectsForYear(year) : normalizedProjects;
-      const completedProjects = viewMode === "timeline" ? completedProjectsForYear(year) : [];
-      return { activeProjects, completedProjects, visibleProjects: [...activeProjects, ...completedProjects] };
+      return {
+        activeProjects: normalizedProjects,
+        completedProjects: [],
+        visibleProjects: normalizedProjects
+      };
     }
 
     function projectById(projectId) {
@@ -2194,12 +1841,6 @@
       stylePresentationButton.classList.toggle("active", layerState.routeStyle === "presentation");
       applyRouteStylePreset();
 
-      ["completed-route-casing", "completed-routes"].forEach(layerId => {
-        if (map && map.getLayer(layerId)) {
-          map.setLayoutProperty(layerId, "visibility", layerState.completed ? "visible" : "none");
-        }
-      });
-
       if (map && map.getLayer("active-routes-glow")) {
         map.setLayoutProperty("active-routes-glow", "visibility", layerState.glow ? "visible" : "none");
       }
@@ -2320,13 +1961,10 @@
       }
 
       const sheetInset = getMobileSheetHeightForState(mobileSheetState);
-      const timelineInset = viewMode === "timeline"
-        ? (mobileTimelineState === "collapsed" ? 82 : 132)
-        : 24;
       return {
         top: 116,
         right: 18,
-        bottom: sheetInset + timelineInset,
+        bottom: sheetInset + 24,
         left: 18
       };
     }
@@ -2454,10 +2092,7 @@
 
     function renderList(activeProjects) {
       if (!activeProjects.length) {
-        const emptyCopy = viewMode === "timeline"
-          ? `Ingen prosjekter er aktive i ${currentYear}. Dra tidslinjen videre eller bruk avspilling for a se utviklingen.`
-          : "Ingen prosjekter er tilgjengelige i den valgte visningen.";
-        projectList.innerHTML = `<p class="empty">${emptyCopy}</p>`;
+        projectList.innerHTML = `<p class="empty">Ingen prosjekter er tilgjengelige i denne visningen.</p>`;
         return;
       }
 
@@ -2496,15 +2131,10 @@
 
     function render(year) {
       currentYear = Number(year);
-      const timelineActive = viewMode === "timeline";
       const { activeProjects, completedProjects, visibleProjects } = visibleProjectsForYear(currentYear);
       const activeFeatureCollection = createFeatureCollection(activeProjects);
       const completedFeatureCollection = createFeatureCollection(completedProjects);
-
-      yearText.textContent = timelineActive ? String(currentYear) : "Alle";
-      projectYearPill.textContent = `År: ${currentYear}`;
-      projectCountPill.textContent = timelineActive ? `Aktive: ${activeProjects.length}` : `Prosjekter: ${activeProjects.length}`;
-      projectYearPill.style.display = timelineActive ? "" : "none";
+      projectCountPill.textContent = `Prosjekter: ${activeProjects.length}`;
 
       if (!visibleProjects.find(project => project.id === selectedId)) {
         selectedId = null;
@@ -2519,16 +2149,9 @@
         applyTabState();
       }
 
-      caption.textContent = timelineActive
-        ? (activeProjects.length
-          ? `Viser ${activeProjects.length} prosjekter som er aktive i ${currentYear}.`
-          : `Ingen prosjekter er aktive i ${currentYear}; bruk tidslinjen for a bevege deg gjennom portefoljen.`)
-        : `Viser hele prosjektportefoljen samlet pa kartet.`;
-
       renderDetailPanel();
       renderHoverStats();
       renderList(activeProjects);
-      applyViewModeState();
       applyMobileSheetState();
       applyLayerState();
 
@@ -2545,22 +2168,6 @@
       if (map && isMobileViewport) {
         map.resize();
       }
-    }
-
-    function togglePlayback() {
-      if (playTimer) {
-        window.clearInterval(playTimer);
-        playTimer = null;
-        playButton.textContent = "▶";
-        return;
-      }
-
-      playButton.textContent = "❚❚";
-      playTimer = window.setInterval(() => {
-        const nextYear = currentYear >= maxYear ? minYear : currentYear + 1;
-        slider.value = String(nextYear);
-        render(nextYear);
-      }, 1000);
     }
 
     function ensureProjectLayers() {
@@ -2880,9 +2487,14 @@
       map.addControl(styleFlipperControl, "top-left");
     }
 
+    function forceCompactAttribution() {
+      const attribution = map?.getContainer().querySelector(".maplibregl-ctrl-attrib");
+      if (attribution) {
+        attribution.classList.add("maplibregl-compact");
+      }
+    }
+
     buildLegend();
-    buildTicks();
-    applyViewModeState();
     applyMobileSheetState();
     render(currentYear);
 
@@ -2898,6 +2510,7 @@
 
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), "top-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }));
+    forceCompactAttribution();
 
     function bindProjectInteractions() {
       const interactiveLayers = [
@@ -2922,7 +2535,6 @@
           if (isMobileViewport) {
             selectedId = null;
             activeSidebarTab = "projects";
-            mobileTimelineState = viewMode === "timeline" ? "collapsed" : mobileTimelineState;
             setMobileSheetState("peek");
             render(currentYear);
           }
@@ -2931,9 +2543,6 @@
 
         selectedId = feature.properties.id;
         const project = projectById(selectedId);
-        if (isMobileViewport) {
-          mobileTimelineState = "collapsed";
-        }
         setSidebarTab("selected");
         fitToProject(project);
         render(currentYear);
@@ -2970,14 +2579,14 @@
       ensureStyleFlipper();
       ensureProjectLayers();
       bindProjectInteractions();
+      forceCompactAttribution();
       render(currentYear);
-      if (viewMode === "all") {
-        fitToProjects(normalizedProjects);
-      }
+      fitToProjects(normalizedProjects);
     });
 
     map.on("style.load", () => {
       ensureProjectLayers();
+      forceCompactAttribution();
       render(currentYear);
     });
     applyTabState();
@@ -3008,45 +2617,6 @@
       });
     }
 
-    if (timelineToggleButton) {
-      timelineToggleButton.addEventListener("click", () => {
-        if (!isMobileViewport || viewMode !== "timeline") {
-          return;
-        }
-
-        mobileTimelineState = mobileTimelineState === "collapsed" ? "expanded" : "collapsed";
-        applyMobileTimelineState();
-        if (map) {
-          map.resize();
-        }
-      });
-    }
-
-    modeAllButton.addEventListener("click", () => {
-      if (playTimer) {
-        togglePlayback();
-      }
-      viewMode = "all";
-      if (isMobileViewport) {
-        mobileTimelineState = "collapsed";
-      }
-      render(currentYear);
-      fitToProjects(normalizedProjects);
-    });
-
-    modeTimelineButton.addEventListener("click", () => {
-      viewMode = "timeline";
-      if (isMobileViewport) {
-        mobileTimelineState = selectedId ? "collapsed" : "expanded";
-      }
-      render(currentYear);
-    });
-
-    toggleCompleted.addEventListener("change", event => {
-      layerState.completed = event.target.checked;
-      applyLayerState();
-    });
-
     toggleGlow.addEventListener("change", event => {
       layerState.glow = event.target.checked;
       applyLayerState();
@@ -3061,28 +2631,6 @@
       layerState.routeStyle = button.id === "styleCartographicButton" ? "cartographic" : "presentation";
       applyRouteStylePreset();
       applyLayerState();
-    });
-
-    slider.addEventListener("input", event => {
-      render(event.target.value);
-    });
-
-    playButton.addEventListener("click", togglePlayback);
-
-    resetButton.addEventListener("click", () => {
-      if (playTimer) {
-        togglePlayback();
-      }
-      slider.value = String(minYear);
-      selectedId = null;
-      viewMode = "timeline";
-      if (isMobileViewport) {
-        activeSidebarTab = "projects";
-        mobileSheetState = "half";
-        mobileTimelineState = "expanded";
-      }
-      map.flyTo({ center: toLngLat(defaultCenterUtm32), zoom: 6.35, pitch: 0, bearing: 0, duration: 900 });
-      render(minYear);
     });
 
     mobileViewportQuery.addEventListener("change", syncViewportMode);
