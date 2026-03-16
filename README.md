@@ -1,4 +1,4 @@
-# Vegspor Prototype
+# Vegspor Prototype 1
 
 Rask prototype for a vise vegprosjekter pa kart med en tidsdimensjon.
 
