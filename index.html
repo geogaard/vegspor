@@ -18,6 +18,7 @@
       --outer-pad: 14px;
       --gap: 14px;
       --sidebar-width: 314px;
+      --mobile-sheet-offset: 0px;
       --bg: #08111d;
       --panel: rgba(8, 17, 29, 0.82);
       --panel-strong: rgba(8, 17, 29, 0.92);
@@ -290,11 +291,42 @@
       flex-direction: column;
       min-height: 0;
       padding: 14px;
-      transition: width 0.22s ease, right 0.22s ease;
+      transition: width 0.22s ease, right 0.22s ease, height 0.28s ease, transform 0.28s ease;
     }
 
     .sidebar-right {
       right: var(--outer-pad);
+    }
+
+    .mobile-sheet-rail {
+      display: none;
+    }
+
+    .mobile-sheet-toggle {
+      width: 100%;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 0 2px;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .mobile-sheet-grip {
+      width: 52px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .mobile-sheet-label {
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .sidebar-header {
@@ -708,6 +740,10 @@
       border-radius: 12px;
       color: var(--text);
       background: rgba(255, 255, 255, 0.08);
+    }
+
+    .timeline-mobile-toggle {
+      display: none;
     }
 
     .slider-wrap {
@@ -1216,6 +1252,207 @@
         bottom: 18px;
       }
     }
+
+    @media (max-width: 720px) {
+      :root {
+        --outer-pad: 12px;
+        --gap: 10px;
+      }
+
+      html, body {
+        overflow: hidden;
+      }
+
+      #map {
+        position: fixed;
+        inset: 0;
+        border-radius: 0;
+      }
+
+      .chrome {
+        position: fixed;
+        inset: 0;
+        display: block;
+        min-height: 0;
+        padding: 0;
+      }
+
+      .topbar {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 12px);
+        left: 12px;
+        right: 12px;
+        z-index: 22;
+        display: grid;
+        gap: 10px;
+      }
+
+      .topbar-left,
+      .topbar-right,
+      .meta-stack,
+      .mode-toggle {
+        width: 100%;
+      }
+
+      .topbar-right {
+        position: static;
+        margin-right: 0;
+      }
+
+      .title-card,
+      .view-switcher {
+        width: 100%;
+      }
+
+      .topbar h1 {
+        font-size: 1rem;
+      }
+
+      .topbar p {
+        max-width: none;
+      }
+
+      .mode-btn {
+        flex: 1;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+        top: auto;
+        width: auto;
+        height: var(--mobile-sheet-offset);
+        padding: 12px 12px 14px;
+        border-radius: 22px;
+        overflow: hidden;
+        z-index: 24;
+      }
+
+      .mobile-sheet-rail {
+        display: block;
+      }
+
+      .sidebar-header {
+        margin-bottom: 10px;
+      }
+
+      .sidebar-body {
+        overflow: auto;
+        padding-bottom: 6px;
+      }
+
+      .sidebar[data-sheet-state="peek"] .sidebar-header {
+        margin-bottom: 0;
+      }
+
+      .sidebar[data-sheet-state="peek"] .sidebar-body {
+        opacity: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .sidebar[data-sheet-state="peek"] .tab-strip {
+        display: none;
+      }
+
+      .timeline {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: calc(var(--mobile-sheet-offset) + env(safe-area-inset-bottom, 0px) + 16px);
+        z-index: 21;
+        padding: 10px 12px;
+      }
+
+      .timeline[data-mobile-state="collapsed"] {
+        padding: 9px 10px;
+      }
+
+      .timeline-top {
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .timeline-controls {
+        gap: 8px;
+      }
+
+      .play {
+        width: 36px;
+        height: 36px;
+      }
+
+      .ghost {
+        padding: 9px 11px;
+        border-radius: 10px;
+      }
+
+      .year-readout {
+        gap: 8px;
+      }
+
+      .year-readout strong {
+        font-size: 1.1rem;
+      }
+
+      .year-readout span {
+        font-size: 0.72rem;
+        max-width: none;
+      }
+
+      .ticks {
+        gap: 4px;
+        font-size: 0.62rem;
+      }
+
+      .timeline-mobile-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        min-height: 36px;
+        padding: 0 10px;
+        border-radius: 10px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .timeline[data-mobile-state="collapsed"] .timeline-top {
+        margin-bottom: 0;
+      }
+
+      .timeline[data-mobile-state="collapsed"] .slider-wrap,
+      .timeline[data-mobile-state="collapsed"] .ticks,
+      .timeline[data-mobile-state="collapsed"] #timelineCaption {
+        display: none;
+      }
+
+      .timeline[data-mobile-state="collapsed"] .year-readout strong {
+        font-size: 1rem;
+      }
+
+      .hover-stats {
+        display: none !important;
+      }
+
+      .coord-readout {
+        display: none;
+      }
+
+      .detail-actions,
+      .actions {
+        flex-wrap: wrap;
+      }
+
+      .link-btn {
+        min-height: 40px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1252,7 +1489,13 @@
       </div>
     </section>
 
-    <aside id="sidebarPanel" class="panel sidebar sidebar-right">
+    <aside id="sidebarPanel" class="panel sidebar sidebar-right" data-sheet-state="desktop">
+      <div class="mobile-sheet-rail">
+        <button id="sheetHandleButton" class="mobile-sheet-toggle" type="button" aria-controls="sidebarPanel" aria-expanded="false">
+          <span class="mobile-sheet-grip" aria-hidden="true"></span>
+          <span id="sheetHandleLabel" class="mobile-sheet-label">Prosjektpanel</span>
+        </button>
+      </div>
       <div class="sidebar-header">
         <div class="sidebar-heading">
           <span class="sidebar-kicker">Prosjektpanel</span>
@@ -1334,6 +1577,7 @@
           </div>
         </div>
         <div class="timeline-controls">
+          <button id="timelineToggleButton" class="timeline-mobile-toggle" type="button" aria-expanded="true" aria-controls="yearSlider">▾</button>
           <button id="playButton" class="play" aria-label="Spill av tidslinje">▶</button>
           <button id="resetButton" class="ghost">Til start</button>
         </div>
@@ -1451,6 +1695,7 @@
     const caption = document.getElementById("timelineCaption");
     const playButton = document.getElementById("playButton");
     const resetButton = document.getElementById("resetButton");
+    const timelineToggleButton = document.getElementById("timelineToggleButton");
     const timelinePanel = document.querySelector(".timeline");
     const cursorCoords = document.getElementById("cursorCoords");
     const toggleCompleted = document.getElementById("toggleCompleted");
@@ -1458,6 +1703,9 @@
     const stylePresetGroup = document.getElementById("stylePresetGroup");
     const styleCartographicButton = document.getElementById("styleCartographicButton");
     const stylePresentationButton = document.getElementById("stylePresentationButton");
+    const sheetHandleButton = document.getElementById("sheetHandleButton");
+    const sheetHandleLabel = document.getElementById("sheetHandleLabel");
+    const mobileViewportQuery = window.matchMedia("(max-width: 720px)");
 
     proj4.defs(UTM32_EPSG, "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs +type=crs");
 
@@ -1503,6 +1751,10 @@
     slider.max = maxYear;
     slider.value = initialYear;
 
+    function clampNumber(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
     let currentYear = initialYear;
     let viewMode = "all";
     let selectedId = null;
@@ -1512,6 +1764,9 @@
     let currentStyleId = "geodata-dark";
     let styleFlipperControl = null;
     let activeSidebarTab = "selected";
+    let isMobileViewport = mobileViewportQuery.matches;
+    let mobileSheetState = "half";
+    let mobileTimelineState = "expanded";
     let map = null;
     const layerState = {
       completed: true,
@@ -1611,6 +1866,109 @@
       ticks.innerHTML = tickYears.map(year => `<span>${year}</span>`).join("");
     }
 
+    function getMobileSheetHeightForState(state) {
+      const viewportHeight = window.innerHeight || 760;
+      if (state === "peek") {
+        return 102;
+      }
+      if (state === "full") {
+        return clampNumber(Math.round(viewportHeight * 0.78), 420, Math.max(420, viewportHeight - 84));
+      }
+      return clampNumber(Math.round(viewportHeight * 0.44), 260, Math.max(260, viewportHeight - 210));
+    }
+
+    function updateSheetHandleLabel() {
+      if (!sheetHandleLabel) {
+        return;
+      }
+
+      const labels = {
+        selected: selectedId ? "Valgt prosjekt" : "Prosjektpanel",
+        projects: "Prosjekter",
+        layers: "Lag og visning"
+      };
+      const stateLabel = {
+        peek: "Minimert",
+        half: "Panel",
+        full: "Detaljer"
+      };
+      sheetHandleLabel.textContent = isMobileViewport
+        ? `${labels[activeSidebarTab] || "Prosjektpanel"} · ${stateLabel[mobileSheetState] || "Panel"}`
+        : "Prosjektpanel";
+    }
+
+    function applyMobileSheetState() {
+      document.body.dataset.viewport = isMobileViewport ? "mobile" : "desktop";
+
+      if (!isMobileViewport) {
+        sidebarPanel.dataset.sheetState = "desktop";
+        document.documentElement.style.setProperty("--mobile-sheet-offset", "0px");
+        if (sheetHandleButton) {
+          sheetHandleButton.setAttribute("aria-expanded", "true");
+        }
+        updateSheetHandleLabel();
+        return;
+      }
+
+      if (!selectedId && activeSidebarTab === "selected") {
+        activeSidebarTab = "projects";
+        applyTabState();
+      }
+
+      const nextHeight = getMobileSheetHeightForState(mobileSheetState);
+      sidebarPanel.dataset.sheetState = mobileSheetState;
+      document.documentElement.style.setProperty("--mobile-sheet-offset", `${nextHeight}px`);
+      if (sheetHandleButton) {
+        sheetHandleButton.setAttribute("aria-expanded", String(mobileSheetState !== "peek"));
+      }
+      updateSheetHandleLabel();
+    }
+
+    function setMobileSheetState(nextState) {
+      if (!isMobileViewport || !["peek", "half", "full"].includes(nextState)) {
+        return;
+      }
+      mobileSheetState = nextState;
+      applyMobileSheetState();
+      if (map) {
+        map.resize();
+      }
+    }
+
+    function syncViewportMode() {
+      const wasMobile = isMobileViewport;
+      isMobileViewport = mobileViewportQuery.matches;
+
+      if (isMobileViewport && !wasMobile) {
+        mobileSheetState = selectedId ? "full" : "half";
+        mobileTimelineState = viewMode === "timeline" ? "expanded" : "collapsed";
+      }
+
+      if (!isMobileViewport && wasMobile) {
+        hoveredId = null;
+        hoveredScreenPoint = null;
+      }
+
+      applyMobileTimelineState();
+      applyMobileSheetState();
+      renderHoverStats();
+      if (map) {
+        map.resize();
+      }
+    }
+
+    function applyMobileTimelineState() {
+      const shouldCollapse = !isMobileViewport || viewMode !== "timeline" ? "expanded" : mobileTimelineState;
+      timelinePanel.dataset.mobileState = shouldCollapse;
+
+      if (timelineToggleButton) {
+        const expanded = shouldCollapse !== "collapsed";
+        timelineToggleButton.setAttribute("aria-expanded", String(expanded));
+        timelineToggleButton.textContent = expanded ? "▾" : "▴";
+        timelineToggleButton.style.display = isMobileViewport && viewMode === "timeline" ? "inline-flex" : "none";
+      }
+    }
+
     function applyViewModeState() {
       const timelineActive = viewMode === "timeline";
       modeAllButton.classList.toggle("active", !timelineActive);
@@ -1620,6 +1978,7 @@
       topbarYearPill.style.display = timelineActive ? "" : "none";
       toggleCompleted.disabled = !timelineActive;
       toggleCompleted.closest(".layer-row").style.opacity = timelineActive ? "1" : "0.45";
+      applyMobileTimelineState();
     }
 
     function applyTabState() {
@@ -1641,6 +2000,11 @@
     function setSidebarTab(tab) {
       activeSidebarTab = tab;
       applyTabState();
+      if (isMobileViewport) {
+        setMobileSheetState(tab === "selected" && selectedId ? "full" : "half");
+      } else {
+        updateSheetHandleLabel();
+      }
     }
 
     function visibleProjectsForYear(year) {
@@ -1662,7 +2026,7 @@
     }
 
     function positionHoverStats(point) {
-      if (!map || !point || !hoverStatsCard.classList.contains("visible")) {
+      if (!map || !point || !hoverStatsCard.classList.contains("visible") || isMobileViewport) {
         return;
       }
 
@@ -1717,6 +2081,12 @@
     }
 
     function renderHoverStats() {
+      if (isMobileViewport) {
+        hoverStatsCard.innerHTML = "";
+        hoverStatsCard.classList.remove("visible");
+        return;
+      }
+
       const project = projectById(hoveredId);
       if (!project || !hoveredScreenPoint) {
         hoverStatsCard.innerHTML = "";
@@ -1786,6 +2156,9 @@
     }
 
     function setHoveredProject(projectId, point) {
+      if (isMobileViewport) {
+        return;
+      }
       const changedProject = hoveredId !== projectId;
       hoveredId = projectId;
       hoveredScreenPoint = point;
@@ -1800,6 +2173,11 @@
     }
 
     function clearHoveredProject() {
+      if (isMobileViewport && !hoveredId) {
+        hoverStatsCard.innerHTML = "";
+        hoverStatsCard.classList.remove("visible");
+        return;
+      }
       if (!hoveredId) {
         return;
       }
@@ -1920,7 +2298,7 @@
 
       const bounds = new maplibregl.LngLatBounds(project.geometryLngLat[0], project.geometryLngLat[0]);
       project.geometryLngLat.forEach(coordinate => bounds.extend(coordinate));
-      map.fitBounds(bounds, { padding: { top: 70, right: 70, bottom: 70, left: 50 }, duration: 900 });
+      map.fitBounds(bounds, { padding: getMapPadding(), duration: 900 });
     }
 
     function fitToProjects(projectsToFit) {
@@ -1933,7 +2311,24 @@
         project.geometryLngLat.forEach(coordinate => bounds.extend(coordinate));
       });
 
-      map.fitBounds(bounds, { padding: { top: 70, right: 70, bottom: 70, left: 50 }, duration: 900 });
+      map.fitBounds(bounds, { padding: getMapPadding(), duration: 900 });
+    }
+
+    function getMapPadding() {
+      if (!isMobileViewport) {
+        return { top: 70, right: 70, bottom: 70, left: 50 };
+      }
+
+      const sheetInset = getMobileSheetHeightForState(mobileSheetState);
+      const timelineInset = viewMode === "timeline"
+        ? (mobileTimelineState === "collapsed" ? 82 : 132)
+        : 24;
+      return {
+        top: 116,
+        right: 18,
+        bottom: sheetInset + timelineInset,
+        left: 18
+      };
     }
 
     function getInspectorState() {
@@ -1955,7 +2350,7 @@
         return `
           <div class="inspector-context">
             <span class="inspector-state">Ingen valgt</span>
-            <p class="inspector-hint">Pek på eller klikk på en strekning i kartet for å se prosjektinformasjon her.</p>
+            <p class="inspector-hint">${isMobileViewport ? "Trykk på en strekning i kartet for å se prosjektinformasjon her." : "Pek på eller klikk på en strekning i kartet for å se prosjektinformasjon her."}</p>
           </div>
           <div class="detail-heading">
             <h3>Ingen prosjekt valgt</h3>
@@ -1966,7 +2361,9 @@
 
       const typeMeta = PROJECT_TYPE_META[project.prosjekttype] || PROJECT_TYPE_META.motorvei;
       const inspectorLabel = "Valgt prosjekt";
-      const inspectorHint = "Klikk i kartet eller i prosjektlisten for å bytte valgt prosjekt.";
+      const inspectorHint = isMobileViewport
+        ? "Trykk i kartet eller i prosjektlisten for å bytte valgt prosjekt."
+        : "Klikk i kartet eller i prosjektlisten for å bytte valgt prosjekt.";
       const sourceAction = project.source_url
         ? `<a class="link-btn" href="${project.source_url}" target="_blank" rel="noopener">${project.source_label || "Apne kilde"}</a>`
         : "";
@@ -2117,6 +2514,11 @@
         hoveredId = null;
       }
 
+      if (isMobileViewport && !selectedId && activeSidebarTab === "selected") {
+        activeSidebarTab = "projects";
+        applyTabState();
+      }
+
       caption.textContent = timelineActive
         ? (activeProjects.length
           ? `Viser ${activeProjects.length} prosjekter som er aktive i ${currentYear}.`
@@ -2127,6 +2529,7 @@
       renderHoverStats();
       renderList(activeProjects);
       applyViewModeState();
+      applyMobileSheetState();
       applyLayerState();
 
       if (map && map.getSource("completed-routes")) {
@@ -2138,6 +2541,10 @@
       }
 
       updateRouteFocusLayers();
+
+      if (map && isMobileViewport) {
+        map.resize();
+      }
     }
 
     function togglePlayback() {
@@ -2476,6 +2883,7 @@
     buildLegend();
     buildTicks();
     applyViewModeState();
+    applyMobileSheetState();
     render(currentYear);
 
     map = new maplibregl.Map({
@@ -2511,17 +2919,31 @@
       map.on("click", event => {
         const feature = queryInteractiveFeature(event.point);
         if (!feature) {
+          if (isMobileViewport) {
+            selectedId = null;
+            activeSidebarTab = "projects";
+            mobileTimelineState = viewMode === "timeline" ? "collapsed" : mobileTimelineState;
+            setMobileSheetState("peek");
+            render(currentYear);
+          }
           return;
         }
 
         selectedId = feature.properties.id;
         const project = projectById(selectedId);
+        if (isMobileViewport) {
+          mobileTimelineState = "collapsed";
+        }
         setSidebarTab("selected");
         fitToProject(project);
         render(currentYear);
       });
 
       map.on("mousemove", event => {
+        if (isMobileViewport) {
+          return;
+        }
+
         const [easting, northing] = toUtm32([event.lngLat.lng, event.lngLat.lat]).map(value => Math.round(value));
         cursorCoords.textContent = `E ${easting} · N ${northing}`;
 
@@ -2534,6 +2956,13 @@
 
         map.getCanvas().style.cursor = "pointer";
         setHoveredProject(feature.properties.id, event.point);
+      });
+
+      map.on("mouseleave", () => {
+        if (!isMobileViewport) {
+          map.getCanvas().style.cursor = "";
+          clearHoveredProject();
+        }
       });
     }
 
@@ -2559,17 +2988,57 @@
       });
     });
 
+    if (sheetHandleButton) {
+      sheetHandleButton.addEventListener("click", () => {
+        if (!isMobileViewport) {
+          return;
+        }
+
+        if (mobileSheetState === "peek") {
+          setMobileSheetState("half");
+          return;
+        }
+
+        if (mobileSheetState === "half") {
+          setMobileSheetState("full");
+          return;
+        }
+
+        setMobileSheetState("peek");
+      });
+    }
+
+    if (timelineToggleButton) {
+      timelineToggleButton.addEventListener("click", () => {
+        if (!isMobileViewport || viewMode !== "timeline") {
+          return;
+        }
+
+        mobileTimelineState = mobileTimelineState === "collapsed" ? "expanded" : "collapsed";
+        applyMobileTimelineState();
+        if (map) {
+          map.resize();
+        }
+      });
+    }
+
     modeAllButton.addEventListener("click", () => {
       if (playTimer) {
         togglePlayback();
       }
       viewMode = "all";
+      if (isMobileViewport) {
+        mobileTimelineState = "collapsed";
+      }
       render(currentYear);
       fitToProjects(normalizedProjects);
     });
 
     modeTimelineButton.addEventListener("click", () => {
       viewMode = "timeline";
+      if (isMobileViewport) {
+        mobileTimelineState = selectedId ? "collapsed" : "expanded";
+      }
       render(currentYear);
     });
 
@@ -2607,8 +3076,23 @@
       slider.value = String(minYear);
       selectedId = null;
       viewMode = "timeline";
+      if (isMobileViewport) {
+        activeSidebarTab = "projects";
+        mobileSheetState = "half";
+        mobileTimelineState = "expanded";
+      }
       map.flyTo({ center: toLngLat(defaultCenterUtm32), zoom: 6.35, pitch: 0, bearing: 0, duration: 900 });
       render(minYear);
+    });
+
+    mobileViewportQuery.addEventListener("change", syncViewportMode);
+    window.addEventListener("resize", () => {
+      if (isMobileViewport) {
+        applyMobileSheetState();
+        if (map) {
+          map.resize();
+        }
+      }
     });
 </script>
 </body>

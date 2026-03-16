@@ -1,8 +1,12 @@
-# Vegspor Prototype 12
+# Vegspor
+
+[![Pages](https://github.com/geogaard/vegspor/actions/workflows/pages.yml/badge.svg)](https://github.com/geogaard/vegspor/actions/workflows/pages.yml)
 
 Rask prototype for a vise vegprosjekter pa kart med en tidsdimensjon.
 
 Mockdataene lagres i `ETRS89 / UTM zone 32N (EPSG:25832)`. MapLibre brukes kun som visningsmotor, og koordinatene transformeres til visningsformat i nettleseren.
+
+Live-side: `https://geogaard.github.io/vegspor/`
 
 ## Innhold
 
@@ -15,6 +19,12 @@ Mockdataene lagres i `ETRS89 / UTM zone 32N (EPSG:25832)`. MapLibre brukes kun s
 ## Kom i gang
 
 Apne `index.html` direkte i nettleseren. Prototypen bruker ingen byggekjaede.
+
+For a validere at statisk-siden er konsistent lokalt:
+
+```bash
+node scripts/validate-site.mjs
+```
 
 ## Dataflyt
 
@@ -41,17 +51,20 @@ node scripts/project-data.mjs build-mock
 
 ## GitHub Pages
 
-Repoet har na en GitHub Actions-workflow i `.github/workflows/pages.yml` som:
+GitHub Pages er live pa `https://geogaard.github.io/vegspor/`.
+
+Repoet bruker en GitHub Actions-workflow i `.github/workflows/pages.yml` som:
 
 - validerer `index.html` og `mock-projects.js`
 - lager en minimal Pages-artifact med `index.html` og `mock-projects.js`
-- deployer til GitHub Pages ved push til `master` eller `main`
+- deployer til GitHub Pages ved push til `main` eller `master`
 
 For a bruke dette i egen GitHub-repo:
 
-1. Push prosjektet til din egen repo, ikke bare til dagens `origin`.
+1. Push prosjektet til din egen repo.
 2. Gaa til `Settings -> Pages`.
 3. Sett `Source` til `GitHub Actions`.
-4. Push til `master` eller `main`.
+4. Sjekk `Settings -> Environments -> github-pages` hvis deploy blir blokkert.
+5. Push til `main` eller `master`.
 
 Hvis du senere bruker eget domene, kan du legge en `CNAME`-fil i repo-roten. Workflowen tar den med automatisk.
