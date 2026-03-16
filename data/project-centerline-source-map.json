@@ -1,0 +1,38 @@
+{
+  "projects": {
+    "e6-oslo-ost": {
+      "source_ids": ["23"],
+      "note": "E6 Klemetsrud - Trosterud"
+    },
+    "fellesprosjektet-e6-dovrebanen": {
+      "source_ids": ["24"],
+      "note": "Minnesund - Kolomoen"
+    },
+    "e6-dal-biri": {
+      "source_ids": ["27"],
+      "note": "Dal - Biri"
+    },
+    "e6-aakersvika": {
+      "source_ids": ["28"],
+      "note": "E6 gjennom Ramsar-omradet ved Hamar"
+    },
+    "e6-gudbrandsdalen": {
+      "source_ids": ["13", "14"],
+      "note": "Favang - Hundorp og Vinstra - Kvam"
+    },
+    "rv255-gausdal": {
+      "source_ids": ["30"],
+      "note": "Jorstad - Segalstad bru"
+    },
+    "rv22-fetsund": {
+      "source_ids": [],
+      "note": "Brua over Glomma ved Fetsund. Ikke identifisert i dagens GeoJSON."
+    }
+  },
+  "unmapped_source_ids": {
+    "12": "Ekstra kildegeometri, trolig RV3-korridor",
+    "25": "Ekstra kildegeometri, trolig RV25/RV3-korridor",
+    "26": "Ekstra kildegeometri, trolig RV25/RV3-korridor",
+    "29": "Ekstra kildegeometri, trolig RV25/RV3-korridor"
+  }
+}

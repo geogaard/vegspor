@@ -145,22 +145,8 @@
       -webkit-backdrop-filter: none;
     }
 
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(154, 209, 255, 0.08);
-      color: var(--accent);
-      font-size: 0.5rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
     .topbar h1 {
-      margin: 7px 0 2px;
+      margin: 0 0 4px;
       font-size: clamp(1.08rem, 1.28vw, 1.34rem);
       line-height: 1;
       letter-spacing: -0.04em;
@@ -461,6 +447,22 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .detail-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .detail-nav-btn {
+      flex: 1;
+      justify-content: space-between;
+      min-height: 42px;
+    }
+
+    .detail-nav-btn[disabled] {
+      opacity: 0.42;
+      pointer-events: none;
     }
 
     .detail-secondary {
@@ -1216,11 +1218,8 @@
     <section class="topbar">
       <div class="topbar-left">
         <div class="title-card">
-          <div class="eyebrow">Vegspor</div>
           <h1>Vegspor</h1>
-          <p>
-            Kartet skal lese prosjektene først. Prosjektpanelet skal bare gi kontroll og detaljer.
-          </p>
+          <p>Trykk på en strekning eller velg et prosjekt i listen for å se detaljer.</p>
         </div>
       </div>
     </section>
@@ -1453,6 +1452,7 @@
     let isMobileViewport = mobileViewportQuery.matches;
     let mobileSheetState = "peek";
     let map = null;
+    let detailSwipeStart = null;
     const layerState = {
       glow: true,
       routeStyle: "presentation"
@@ -1658,6 +1658,42 @@
         completedProjects: [],
         visibleProjects: normalizedProjects
       };
+    }
+
+    function orderedProjects(list = normalizedProjects) {
+      return [...list].sort((a, b) => b.prioritet - a.prioritet || a.år_fra - b.år_fra || a.prosjektnavn.localeCompare(b.prosjektnavn, "no"));
+    }
+
+    function selectedProjectSiblings() {
+      if (!selectedId) {
+        return { previous: null, next: null };
+      }
+
+      const list = orderedProjects(visibleProjectsForYear(currentYear).activeProjects);
+      const selectedIndex = list.findIndex(project => project.id === selectedId);
+      if (selectedIndex === -1) {
+        return { previous: null, next: null };
+      }
+
+      return {
+        previous: list[selectedIndex - 1] || null,
+        next: list[selectedIndex + 1] || null
+      };
+    }
+
+    function navigateSelectedProject(direction) {
+      const { previous, next } = selectedProjectSiblings();
+      const target = direction === "previous" ? previous : next;
+      if (!target) {
+        return;
+      }
+
+      selectedId = target.id;
+      if (isMobileViewport) {
+        setMobileSheetState("full");
+      }
+      fitToProject(target);
+      render(currentYear);
     }
 
     function projectById(projectId) {
@@ -2002,6 +2038,7 @@
       const inspectorHint = isMobileViewport
         ? "Trykk i kartet eller i prosjektlisten for å bytte valgt prosjekt."
         : "Klikk i kartet eller i prosjektlisten for å bytte valgt prosjekt.";
+      const { previous, next } = selectedProjectSiblings();
       const sourceAction = project.source_url
         ? `<a class="link-btn" href="${project.source_url}" target="_blank" rel="noopener">${project.source_label || "Apne kilde"}</a>`
         : "";
@@ -2069,6 +2106,17 @@
           <p><strong>Geometri:</strong> ${project.geometry_status}</p>
           <p><strong>Geometrikilde:</strong> ${project.geometry_kilde}</p>
         </details>
+        ${isMobileViewport ? `
+        <div class="detail-nav">
+          <button class="link-btn secondary detail-nav-btn" type="button" id="detailPrevButton" ${previous ? "" : "disabled"}>
+            <span>Forrige</span>
+            <span>${previous ? previous.vegnummer : ""}</span>
+          </button>
+          <button class="link-btn secondary detail-nav-btn" type="button" id="detailNextButton" ${next ? "" : "disabled"}>
+            <span>Neste</span>
+            <span>${next ? next.vegnummer : ""}</span>
+          </button>
+        </div>` : ""}
         <div class="detail-actions">
           ${sourceAction}
           ${vegkartAction}
@@ -2082,12 +2130,83 @@
       const project = inspectorState.project;
       detailPanel.innerHTML = detailHtml(inspectorState);
 
+      const { previous, next } = selectedProjectSiblings();
+      const previousButton = document.getElementById("detailPrevButton");
+      const nextButton = document.getElementById("detailNextButton");
       const zoomButton = document.getElementById("detailZoomButton");
+
+      if (previousButton && previous) {
+        previousButton.addEventListener("click", () => {
+          navigateSelectedProject("previous");
+        });
+      }
+
+      if (nextButton && next) {
+        nextButton.addEventListener("click", () => {
+          navigateSelectedProject("next");
+        });
+      }
+
       if (zoomButton && project) {
         zoomButton.addEventListener("click", () => {
           fitToProject(project);
         });
       }
+    }
+
+    function bindDetailSwipe() {
+      const swipeIgnoreSelector = "a, button, input, summary, label";
+      const minSwipeDistance = 56;
+      const horizontalDominance = 1.25;
+
+      detailPanel.addEventListener("touchstart", event => {
+        if (!isMobileViewport || activeSidebarTab !== "selected" || !selectedId) {
+          detailSwipeStart = null;
+          return;
+        }
+
+        if (event.target.closest(swipeIgnoreSelector)) {
+          detailSwipeStart = null;
+          return;
+        }
+
+        const touch = event.changedTouches[0];
+        detailSwipeStart = {
+          x: touch.clientX,
+          y: touch.clientY
+        };
+      }, { passive: true });
+
+      detailPanel.addEventListener("touchend", event => {
+        if (!detailSwipeStart || !isMobileViewport || activeSidebarTab !== "selected" || !selectedId) {
+          detailSwipeStart = null;
+          return;
+        }
+
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - detailSwipeStart.x;
+        const deltaY = touch.clientY - detailSwipeStart.y;
+        detailSwipeStart = null;
+
+        if (Math.abs(deltaX) < minSwipeDistance) {
+          return;
+        }
+
+        if (Math.abs(deltaX) < Math.abs(deltaY) * horizontalDominance) {
+          return;
+        }
+
+        if (deltaX < 0) {
+          navigateSelectedProject("next");
+          return;
+        }
+
+        navigateSelectedProject("previous");
+      }, { passive: true });
+
+      detailPanel.addEventListener("touchcancel", () => {
+        detailSwipeStart = null;
+      }, { passive: true });
     }
 
     function renderList(activeProjects) {
@@ -2497,6 +2616,7 @@
     buildLegend();
     applyMobileSheetState();
     render(currentYear);
+    bindDetailSwipe();
 
     map = new maplibregl.Map({
       container: "map",

@@ -1,0 +1,24 @@
+{
+  "fellesprosjektet-e6-dovrebanen": {
+    "description": "Minnesund - Kolomoen",
+    "segments": [
+      {
+        "vegsystemreferanse": "EV6KS25D1",
+        "from_meter": 12028
+      },
+      {
+        "vegsystemreferanse": "EV6KS26D1"
+      },
+      {
+        "vegsystemreferanse": "EV6KS27D1"
+      },
+      {
+        "vegsystemreferanse": "EV6KS28D1"
+      },
+      {
+        "vegsystemreferanse": "EV6KS29D1",
+        "to_meter": 9245
+      }
+    ]
+  }
+}

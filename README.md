@@ -2,7 +2,7 @@
 
 [![Pages](https://github.com/geogaard/vegspor/actions/workflows/pages.yml/badge.svg)](https://github.com/geogaard/vegspor/actions/workflows/pages.yml)
 
-Rask prototype for a vise vegprosjekter pa kart med en tidsdimensjon.
+Rask prototype for a vise vegprosjekter pa kart.
 
 Mockdataene lagres i `ETRS89 / UTM zone 32N (EPSG:25832)`. MapLibre brukes kun som visningsmotor, og koordinatene transformeres til visningsformat i nettleseren.
 
@@ -10,11 +10,14 @@ Live-side: `https://geogaard.github.io/vegspor/`
 
 ## Innhold
 
-- `index.html` - MapLibre-basert prototype med tidslinje, prosjektpanel og Vegkart-lenker
+- `index.html` - MapLibre-basert prototype med kart, prosjektpanel og Vegkart-lenker
 - `data/projects.csv` - prosjektregister for metadata og innhold
 - `data/project-geometries.json` - UTM32-geometrier per prosjekt
+- `data/project-representations.geojson` - hjelpelinjer brukt som input mot NVDB
+- `data/nvdb-centerlines.json` - NVDB-avledede senterlinjer per kildefeature
 - `mock-projects.js` - generert appdata for prototypen
 - `scripts/project-data.mjs` - synk mellom `CSV/geometri` og `mock-projects.js`
+- `scripts/fetch-nvdb-centerlines.mjs` - henter senterlinjegeometri fra NVDB basert pa hjelpelinjer
 
 ## Kom i gang
 
@@ -43,10 +46,18 @@ For a bygge `mock-projects.js` tilbake fra `CSV + geometri`:
 node scripts/project-data.mjs build-mock
 ```
 
+For a hente senterlinjer fra NVDB basert pa hjelpelinjene i repoet:
+
+```bash
+node scripts/fetch-nvdb-centerlines.mjs
+```
+
+Scriptet skriver `data/nvdb-centerlines.json` og markerer hver linje med `nvdb_complete`, `nvdb_status` og brukt `nvdb_max_distance_used`.
+
 ## Neste steg
 
 - Fyll `data/projects.csv` med mer presise prosjektopplysninger
-- Legg til mer presise geometrier fra Vegkart/NVDB
+- Koble NVDB-senterlinjene til riktig prosjekt-id i `data/projects.csv`
 - Del opp data videre i egne filer for media og fortellingskapitler
 
 ## GitHub Pages

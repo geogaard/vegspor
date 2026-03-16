@@ -1,0 +1,345 @@
+{
+  "e6-dal-biri": {
+    "best_match": {
+      "source_id": "27",
+      "score": 1208,
+      "symmetric_distance_m": 905,
+      "length_ratio": 1.6,
+      "project_length_km": 108.5,
+      "centerline_length_km": 174.2,
+      "nvdb_complete": true,
+      "nvdb_status": "KOMPLETT",
+      "nvdb_status_code": 2000
+    },
+    "confidence": "high",
+    "candidates": [
+      {
+        "source_id": "27",
+        "score": 1208,
+        "symmetric_distance_m": 905,
+        "length_ratio": 1.6,
+        "project_length_km": 108.5,
+        "centerline_length_km": 174.2,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "28",
+        "score": 27373,
+        "symmetric_distance_m": 26803,
+        "length_ratio": 2.14,
+        "project_length_km": 108.5,
+        "centerline_length_km": 50.7,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "24",
+        "score": 40728,
+        "symmetric_distance_m": 40701,
+        "length_ratio": 1.05,
+        "project_length_km": 108.5,
+        "centerline_length_km": 102.9,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  },
+  "fellesprosjektet-e6-dovrebanen": {
+    "best_match": {
+      "source_id": "27",
+      "score": 5078,
+      "symmetric_distance_m": 3856,
+      "length_ratio": 3.44,
+      "project_length_km": 50.6,
+      "centerline_length_km": 174.2,
+      "nvdb_complete": true,
+      "nvdb_status": "KOMPLETT",
+      "nvdb_status_code": 2000
+    },
+    "confidence": "low",
+    "candidates": [
+      {
+        "source_id": "27",
+        "score": 5078,
+        "symmetric_distance_m": 3856,
+        "length_ratio": 3.44,
+        "project_length_km": 50.6,
+        "centerline_length_km": 174.2,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "28",
+        "score": 24039,
+        "symmetric_distance_m": 24037,
+        "length_ratio": 1,
+        "project_length_km": 50.6,
+        "centerline_length_km": 50.7,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "24",
+        "score": 38623,
+        "symmetric_distance_m": 38106,
+        "length_ratio": 2.03,
+        "project_length_km": 50.6,
+        "centerline_length_km": 102.9,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  },
+  "e6-aakersvika": {
+    "best_match": {
+      "source_id": "27",
+      "score": 15656,
+      "symmetric_distance_m": 13145,
+      "length_ratio": 6.02,
+      "project_length_km": 28.9,
+      "centerline_length_km": 174.2,
+      "nvdb_complete": true,
+      "nvdb_status": "KOMPLETT",
+      "nvdb_status_code": 2000
+    },
+    "confidence": "low",
+    "candidates": [
+      {
+        "source_id": "27",
+        "score": 15656,
+        "symmetric_distance_m": 13145,
+        "length_ratio": 6.02,
+        "project_length_km": 28.9,
+        "centerline_length_km": 174.2,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "28",
+        "score": 20216,
+        "symmetric_distance_m": 19839,
+        "length_ratio": 1.75,
+        "project_length_km": 28.9,
+        "centerline_length_km": 50.7,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "29",
+        "score": 38705,
+        "symmetric_distance_m": 38348,
+        "length_ratio": 1.71,
+        "project_length_km": 28.9,
+        "centerline_length_km": 49.6,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  },
+  "e6-gudbrandsdalen": {
+    "best_match": {
+      "source_id": "13",
+      "score": 14527,
+      "symmetric_distance_m": 8669,
+      "length_ratio": 2.72,
+      "project_length_km": 102.9,
+      "centerline_length_km": 37.9,
+      "nvdb_complete": false,
+      "nvdb_status": "IKKE_FUNNET_RUTE",
+      "nvdb_status_code": 4040
+    },
+    "confidence": "low",
+    "candidates": [
+      {
+        "source_id": "13",
+        "score": 14527,
+        "symmetric_distance_m": 8669,
+        "length_ratio": 2.72,
+        "project_length_km": 102.9,
+        "centerline_length_km": 37.9,
+        "nvdb_complete": false,
+        "nvdb_status": "IKKE_FUNNET_RUTE",
+        "nvdb_status_code": 4040
+      },
+      {
+        "source_id": "14",
+        "score": 15493,
+        "symmetric_distance_m": 13922,
+        "length_ratio": 4.14,
+        "project_length_km": 102.9,
+        "centerline_length_km": 24.8,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "30",
+        "score": 21410,
+        "symmetric_distance_m": 19397,
+        "length_ratio": 5.03,
+        "project_length_km": 102.9,
+        "centerline_length_km": 20.5,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  },
+  "rv255-gausdal": {
+    "best_match": {
+      "source_id": "30",
+      "score": 3835,
+      "symmetric_distance_m": 3760,
+      "length_ratio": 1.15,
+      "project_length_km": 17.8,
+      "centerline_length_km": 20.5,
+      "nvdb_complete": true,
+      "nvdb_status": "KOMPLETT",
+      "nvdb_status_code": 2000
+    },
+    "confidence": "medium",
+    "candidates": [
+      {
+        "source_id": "30",
+        "score": 3835,
+        "symmetric_distance_m": 3760,
+        "length_ratio": 1.15,
+        "project_length_km": 17.8,
+        "centerline_length_km": 20.5,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "13",
+        "score": 40738,
+        "symmetric_distance_m": 35172,
+        "length_ratio": 2.13,
+        "project_length_km": 17.8,
+        "centerline_length_km": 37.9,
+        "nvdb_complete": false,
+        "nvdb_status": "IKKE_FUNNET_RUTE",
+        "nvdb_status_code": 4040
+      },
+      {
+        "source_id": "29",
+        "score": 52442,
+        "symmetric_distance_m": 51548,
+        "length_ratio": 2.79,
+        "project_length_km": 17.8,
+        "centerline_length_km": 49.6,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  },
+  "e6-oslo-ost": {
+    "best_match": {
+      "source_id": "23",
+      "score": 393,
+      "symmetric_distance_m": 368,
+      "length_ratio": 1.05,
+      "project_length_km": 15.8,
+      "centerline_length_km": 15.1,
+      "nvdb_complete": true,
+      "nvdb_status": "KOMPLETT",
+      "nvdb_status_code": 2000
+    },
+    "confidence": "high",
+    "candidates": [
+      {
+        "source_id": "23",
+        "score": 393,
+        "symmetric_distance_m": 368,
+        "length_ratio": 1.05,
+        "project_length_km": 15.8,
+        "centerline_length_km": 15.1,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "24",
+        "score": 39830,
+        "symmetric_distance_m": 37072,
+        "length_ratio": 6.52,
+        "project_length_km": 15.8,
+        "centerline_length_km": 102.9,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "27",
+        "score": 66165,
+        "symmetric_distance_m": 61151,
+        "length_ratio": 11.03,
+        "project_length_km": 15.8,
+        "centerline_length_km": 174.2,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  },
+  "rv22-fetsund": {
+    "best_match": {
+      "source_id": "23",
+      "score": 10888,
+      "symmetric_distance_m": 10821,
+      "length_ratio": 1.13,
+      "project_length_km": 13.3,
+      "centerline_length_km": 15.1,
+      "nvdb_complete": true,
+      "nvdb_status": "KOMPLETT",
+      "nvdb_status_code": 2000
+    },
+    "confidence": "low",
+    "candidates": [
+      {
+        "source_id": "23",
+        "score": 10888,
+        "symmetric_distance_m": 10821,
+        "length_ratio": 1.13,
+        "project_length_km": 13.3,
+        "centerline_length_km": 15.1,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "24",
+        "score": 29185,
+        "symmetric_distance_m": 25809,
+        "length_ratio": 7.75,
+        "project_length_km": 13.3,
+        "centerline_length_km": 102.9,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      },
+      {
+        "source_id": "25",
+        "score": 57628,
+        "symmetric_distance_m": 57077,
+        "length_ratio": 2.1,
+        "project_length_km": 13.3,
+        "centerline_length_km": 27.9,
+        "nvdb_complete": true,
+        "nvdb_status": "KOMPLETT",
+        "nvdb_status_code": 2000
+      }
+    ]
+  }
+}
