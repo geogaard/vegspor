@@ -94,5 +94,16 @@
         "to_meter": 3817
       }
     ]
+  },
+  "rv22-fetsund": {
+    "description": "RV22 Kryssing av Glomma",
+    "retning": "MOT",
+    "segments": [
+      {
+        "vegsystemreferanse": "RV22KS13D1",
+        "from_meter": 305,
+        "to_meter": 2197
+      }
+    ]
   }
 }
