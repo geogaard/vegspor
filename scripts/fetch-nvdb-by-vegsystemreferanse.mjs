@@ -46,38 +46,57 @@ function usage() {
   ].join("\n");
 }
 
-function fetchJson(url) {
-  return new Promise((resolve, reject) => {
-    const request = https.get(
-      url,
-      {
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "Mozilla/5.0",
-          "X-Client": "vegspor-vegsystemreferanse-import"
-        }
-      },
-      response => {
-        let body = "";
-        response.setEncoding("utf8");
-        response.on("data", chunk => {
-          body += chunk;
-        });
-        response.on("end", () => {
-          if (response.statusCode && response.statusCode >= 400) {
-            reject(new Error(`Request failed ${response.statusCode}: ${body}`));
-            return;
-          }
-          resolve(JSON.parse(body));
-        });
-      }
-    );
-
-    request.setTimeout(60000, () => {
-      request.destroy(new Error(`Request timed out for ${url}`));
-    });
-    request.on("error", reject);
+function sleep(milliseconds) {
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
   });
+}
+
+async function fetchJson(url, attempt = 1) {
+  try {
+    return await new Promise((resolve, reject) => {
+      const request = https.get(
+        url,
+        {
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "Mozilla/5.0",
+            "X-Client": "vegspor-vegsystemreferanse-import"
+          }
+        },
+        response => {
+          let body = "";
+          response.setEncoding("utf8");
+          response.on("data", chunk => {
+            body += chunk;
+          });
+          response.on("end", () => {
+            if (response.statusCode && response.statusCode >= 400) {
+              reject(new Error(`Request failed ${response.statusCode}: ${body}`));
+              return;
+            }
+            resolve(JSON.parse(body));
+          });
+        }
+      );
+
+      request.setTimeout(60000, () => {
+        request.destroy(new Error(`Request timed out for ${url}`));
+      });
+      request.on("error", reject);
+    });
+  } catch (error) {
+    if (attempt >= 4) {
+      throw error;
+    }
+
+    if (!["ECONNRESET", "ETIMEDOUT"].includes(error.code) && !String(error.message).includes("timed out")) {
+      throw error;
+    }
+
+    await sleep(500 * attempt);
+    return fetchJson(url, attempt + 1);
+  }
 }
 
 async function loadProj4() {
@@ -177,7 +196,7 @@ async function fetchAllSegments(vegsystemreferanse) {
   return segments;
 }
 
-function includeSegment(segment, spec) {
+function includeSegment(segment, spec, projectConfig) {
   if (segment.type !== "HOVED") {
     return false;
   }
@@ -191,7 +210,8 @@ function includeSegment(segment, spec) {
     return false;
   }
 
-  if (strekning.retning && strekning.retning !== "MED") {
+  const requiredRetning = spec.retning || projectConfig.retning || "MED";
+  if (strekning.retning && strekning.retning !== requiredRetning) {
     return false;
   }
 
@@ -260,8 +280,8 @@ const output = {};
   for (const spec of projectConfig.segments || []) {
     console.error(`${projectId}: fetching ${spec.vegsystemreferanse}`);
     const segments = await fetchAllSegments(spec.vegsystemreferanse);
-    includedSegments.push(...segments.filter(segment => includeSegment(segment, spec)));
-    }
+    includedSegments.push(...segments.filter(segment => includeSegment(segment, spec, projectConfig)));
+  }
 
     includedSegments.sort(compareSegments);
 

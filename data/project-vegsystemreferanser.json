@@ -20,5 +20,79 @@
         "to_meter": 9245
       }
     ]
+  },
+  "rv2-s3d1-s1d1": {
+    "description": "RV2 K S3D1 m4892 - RV2 K S1D1 m1934",
+    "retning": "MOT",
+    "segments": [
+      {
+        "vegsystemreferanse": "RV2KS1D1",
+        "to_meter": 1934
+      },
+      {
+        "vegsystemreferanse": "RV2KS2D1"
+      },
+      {
+        "vegsystemreferanse": "RV2KS3D1",
+        "from_meter": 4892
+      }
+    ]
+  },
+  "rv2-brandval-flisa": {
+    "description": "RV2 Brandval - Flisa",
+    "segments": [
+      {
+        "vegsystemreferanse": "RV2KS7D1",
+        "from_meter": 636
+      },
+      {
+        "vegsystemreferanse": "RV2KS8D1"
+      },
+      {
+        "vegsystemreferanse": "RV2KS9D1"
+      },
+      {
+        "vegsystemreferanse": "RV2KS10D1"
+      },
+      {
+        "vegsystemreferanse": "RV2KS11D1",
+        "to_meter": 1505
+      }
+    ]
+  },
+  "rv3-rv25-s2d1-s4d1": {
+    "description": "RV3/R25 RV3 K S2D1 m3941 - RV3 K S4D1 m7432",
+    "segments": [
+      {
+        "vegsystemreferanse": "RV3KS2D1",
+        "from_meter": 3941
+      },
+      {
+        "vegsystemreferanse": "RV3KS3D1"
+      },
+      {
+        "vegsystemreferanse": "RV3KS4D1",
+        "to_meter": 7432
+      }
+    ]
+  },
+  "rv3-aasta-opphus": {
+    "description": "RV3 Aasta - Opphus",
+    "segments": [
+      {
+        "vegsystemreferanse": "RV3KS6D1",
+        "from_meter": 4450
+      },
+      {
+        "vegsystemreferanse": "RV3KS7D1"
+      },
+      {
+        "vegsystemreferanse": "RV3KS8D1"
+      },
+      {
+        "vegsystemreferanse": "RV3KS9D1",
+        "to_meter": 3817
+      }
+    ]
   }
 }
