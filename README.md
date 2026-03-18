@@ -4,15 +4,16 @@
 
 Rask prototype for a vise vegprosjekter pa kart.
 
-Mockdataene lagres i `ETRS89 / UTM zone 32N (EPSG:25832)`. MapLibre brukes kun som visningsmotor, og koordinatene transformeres til visningsformat i nettleseren.
+Autoritativ prosjektlagring ligger i `data/projects.geojson` som `WGS84 / EPSG:4326`. Av hensyn til appen genereres det fortsatt UTM32-derivater og `mock-projects.js`, men disse er ikke lenger source of truth.
 
 Live-side: `https://geogaard.github.io/vegspor/`
 
 ## Innhold
 
 - `index.html` - MapLibre-basert prototype med kart, prosjektpanel og Vegkart-lenker
-- `data/projects.csv` - prosjektregister for metadata og innhold
-- `data/project-geometries.json` - UTM32-geometrier per prosjekt
+- `data/projects.geojson` - autoritativ prosjektfil i WGS84 GeoJSON
+- `data/projects.csv` - derivert prosjektregister for tabellredigering og kontroll
+- `data/project-geometries.json` - derivert UTM32-geometri per prosjekt
 - `data/project-representations.geojson` - hjelpelinjer brukt som input mot NVDB
 - `data/nvdb-centerlines.json` - NVDB-avledede senterlinjer per kildefeature
 - `mock-projects.js` - generert appdata for prototypen
@@ -31,19 +32,25 @@ node scripts/validate-site.mjs
 
 ## Dataflyt
 
-Prosjektregisteret eies na i `data/projects.csv`, mens geometri ligger i `data/project-geometries.json`.
-CSV-en inneholder na ogsa presentasjons- og kvalitetsfelt som `kostnad_label`, `length_km`, `datakvalitet`, `geometry_status` og `geometry_kilde`.
+Autoritativ kilde er na `data/projects.geojson`, der bade metadata og geometri ligger samlet som GeoJSON-features i WGS84.
+`data/projects.csv` og `data/project-geometries.json` bygges ut fra denne filen for kompatibilitet med eksisterende scripts og appdata.
 
-For a trekke ut dagens appdata til disse filene:
+For a trekke ut dagens appdata til autoritativ GeoJSON og derivater:
 
 ```bash
 node scripts/project-data.mjs extract-from-mock
 ```
 
-For a bygge `mock-projects.js` tilbake fra `CSV + geometri`:
+For a bygge `mock-projects.js` og derivater tilbake fra autoritativ GeoJSON:
 
 ```bash
 node scripts/project-data.mjs build-mock
+```
+
+For a migrere et eksisterende `CSV + UTM32`-oppsett til autoritativ GeoJSON:
+
+```bash
+node scripts/project-data.mjs migrate-to-geojson
 ```
 
 For a hente senterlinjer fra NVDB basert pa hjelpelinjene i repoet:

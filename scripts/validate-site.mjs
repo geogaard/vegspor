@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const indexPath = path.join(repoRoot, "index.html");
 const mockProjectsPath = path.join(repoRoot, "mock-projects.js");
+const projectsGeoJsonPath = path.join(repoRoot, "data", "projects.geojson");
 
 function assert(condition, message) {
   if (!condition) {
@@ -45,7 +46,24 @@ async function validateMockProjects() {
   }
 }
 
+async function validateProjectsGeoJson() {
+  const source = await fs.readFile(projectsGeoJsonPath, "utf8");
+  const geoJson = JSON.parse(source);
+  assert(geoJson.type === "FeatureCollection", "data/projects.geojson er ikke en FeatureCollection");
+  assert(Array.isArray(geoJson.features) && geoJson.features.length > 0, "data/projects.geojson har ingen features");
+
+  for (const feature of geoJson.features) {
+    assert(feature.id || feature.properties?.id, "Feature i data/projects.geojson mangler id");
+    assert(feature.geometry?.type === "LineString", `Feature ${feature.id ?? feature.properties?.id} har ikke LineString-geometri`);
+    assert(
+      Array.isArray(feature.geometry.coordinates) && feature.geometry.coordinates.length > 1,
+      `Feature ${feature.id ?? feature.properties?.id} mangler koordinater`
+    );
+  }
+}
+
 await validateIndexHtml();
+await validateProjectsGeoJson();
 await validateMockProjects();
 
 console.log("Site validation OK");
