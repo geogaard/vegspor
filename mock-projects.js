@@ -8,7 +8,7 @@ window.mockProjects = [
     "kommune": "Eidsvoll, Stange, Ringsaker, Gjøvik",
     "fylke": "Akershus, Innlandet",
     "år_fra": 2007,
-    "år_til": 2026,
+    "år_til": 2016,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Korridor under videre utbygging",
     "prosjekttype": "motorvei",
@@ -323,8 +323,8 @@ window.mockProjects = [
     "sted": "Eidsvoll / Stange",
     "kommune": "Eidsvoll, Stange",
     "fylke": "Akershus, Innlandet",
-    "år_fra": 2012,
-    "år_til": 2015,
+    "år_fra": 2008,
+    "år_til": 2014,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Apnet desember 2015",
     "prosjekttype": "fellesprosjekt",
@@ -445,14 +445,14 @@ window.mockProjects = [
   },
   {
     "id": "e6-aakersvika",
-    "prosjektnavn": "E6 Aakersvika",
+    "prosjektnavn": "E6 Åkersvika",
     "vegnummer": "E6",
     "delstrekning": "Katerud - Arnkvern / Akersvika",
     "sted": "Hamar",
     "kommune": "Hamar, Stange",
     "fylke": "Innlandet",
-    "år_fra": 2013,
-    "år_til": 2020,
+    "år_fra": 2012,
+    "år_til": 2015,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Planlagt og bygd som del av E6 ved Hamar",
     "prosjekttype": "motorvei",
@@ -523,8 +523,8 @@ window.mockProjects = [
     "sted": "Gudbrandsdalen",
     "kommune": "Oyer, Ringebu, Sor-Fron, Nord-Fron, Sel",
     "fylke": "Innlandet",
-    "år_fra": 2021,
-    "år_til": 2026,
+    "år_fra": 2006,
+    "år_til": 2012,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Delvis apnet, delvis under planlegging",
     "prosjekttype": "utbedring",
@@ -903,8 +903,8 @@ window.mockProjects = [
     "sted": "Gausdal / Lillehammer",
     "kommune": "Gausdal, Lillehammer",
     "fylke": "Innlandet",
-    "år_fra": 2007,
-    "år_til": 2009,
+    "år_fra": 2005,
+    "år_til": 2007,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Apnet hosten 2009",
     "prosjekttype": "utbedring",
@@ -1005,14 +1005,14 @@ window.mockProjects = [
   },
   {
     "id": "e6-oslo-ost",
-    "prosjektnavn": "E6 Oslo ost",
+    "prosjektnavn": "E6 Oslo Øst",
     "vegnummer": "E6",
     "delstrekning": "Klemetsrud - Trosterud",
     "sted": "Oslo ost",
     "kommune": "Oslo",
     "fylke": "Oslo",
-    "år_fra": 1995,
-    "år_til": 2021,
+    "år_fra": 2013,
+    "år_til": 2020,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Pa vent siden 2021",
     "prosjekttype": "utbedring",
@@ -1091,8 +1091,8 @@ window.mockProjects = [
     "sted": "Fetsund",
     "kommune": "Lillestrom, Enebakk",
     "fylke": "Akershus",
-    "år_fra": 2012,
-    "år_til": 2026,
+    "år_fra": 1998,
+    "år_til": 2002,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Reguleringsplan under arbeid",
     "prosjekttype": "bru",
@@ -1139,8 +1139,8 @@ window.mockProjects = [
     "sted": "RV2-korridoren",
     "kommune": "Ikke registrert",
     "fylke": "Ikke registrert",
-    "år_fra": 2026,
-    "år_til": 2026,
+    "år_fra": 1990,
+    "år_til": 1995,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Metadata ma fylles inn",
     "prosjekttype": "utbedring",
@@ -1327,8 +1327,8 @@ window.mockProjects = [
     "sted": "Brandval / Flisa",
     "kommune": "Ikke registrert",
     "fylke": "Ikke registrert",
-    "år_fra": 2026,
-    "år_til": 2026,
+    "år_fra": 1985,
+    "år_til": 1988,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Metadata ma fylles inn",
     "prosjekttype": "utbedring",
@@ -1485,14 +1485,14 @@ window.mockProjects = [
   },
   {
     "id": "rv3-aasta-opphus",
-    "prosjektnavn": "Rv. 3 Aasta - Opphus",
+    "prosjektnavn": "Rv. 3 Åsta - Opphus",
     "vegnummer": "Rv. 3",
     "delstrekning": "Aasta - Opphus",
     "sted": "Aasta / Opphus",
     "kommune": "Ikke registrert",
     "fylke": "Ikke registrert",
-    "år_fra": 2026,
-    "år_til": 2026,
+    "år_fra": 1985,
+    "år_til": 1988,
     "rolle": "Rolle ma fylles inn",
     "prosjektstatus": "Metadata ma fylles inn",
     "prosjekttype": "utbedring",
@@ -1611,8 +1611,8 @@ window.mockProjects = [
     "sted": "Tynset",
     "kommune": "Tynset",
     "fylke": "Innlandet",
-    "år_fra": 2001,
-    "år_til": 2001,
+    "år_fra": 1997,
+    "år_til": 1999,
     "rolle": "Rolle må fylles ut",
     "prosjektstatus": "Apnet",
     "prosjekttype": "Bru",
@@ -1692,6 +1692,222 @@ window.mockProjects = [
       [
         589874,
         6909955
+      ]
+    ]
+  },
+  {
+    "id": "E16-klokfta-kongsvinger",
+    "prosjektnavn": "E16-kløfta-kongsvinger",
+    "vegnummer": "E16",
+    "delstrekning": "Kløfta-Kongsvinger",
+    "sted": "Skarnes",
+    "kommune": "Skarnes",
+    "fylke": "Innlandet",
+    "år_fra": 1995,
+    "år_til": 1999,
+    "rolle": "Planleggingsleder",
+    "prosjektstatus": "KU - Kommunedelplan",
+    "prosjekttype": "Motorveg",
+    "beskrivelse_kort": "",
+    "kilde": "",
+    "prioritet": "",
+    "source_label": "",
+    "source_url": "",
+    "vegkart_url": "",
+    "kostnad_label": "",
+    "length_km": "",
+    "length_unit_label": "",
+    "datakvalitet": "",
+    "geometry_status": "",
+    "geometry_kilde": "",
+    "geometry_utm32": [
+      [
+        618838,
+        6661614
+      ],
+      [
+        619877,
+        6662263
+      ],
+      [
+        620873,
+        6662653
+      ],
+      [
+        621999,
+        6663606
+      ],
+      [
+        625333,
+        6664255
+      ],
+      [
+        626588,
+        6666680
+      ],
+      [
+        628190,
+        6667675
+      ],
+      [
+        629792,
+        6668108
+      ],
+      [
+        632260,
+        6669104
+      ],
+      [
+        633386,
+        6669927
+      ],
+      [
+        634209,
+        6670836
+      ],
+      [
+        634512,
+        6671745
+      ],
+      [
+        635378,
+        6671702
+      ],
+      [
+        637196,
+        6672741
+      ],
+      [
+        639058,
+        6673694
+      ],
+      [
+        640530,
+        6674690
+      ],
+      [
+        641829,
+        6675469
+      ],
+      [
+        643691,
+        6676898
+      ],
+      [
+        644946,
+        6677677
+      ],
+      [
+        646115,
+        6678586
+      ],
+      [
+        647371,
+        6679539
+      ],
+      [
+        647891,
+        6680838
+      ],
+      [
+        647761,
+        6681790
+      ],
+      [
+        647847,
+        6683046
+      ],
+      [
+        648107,
+        6683436
+      ],
+      [
+        648843,
+        6683392
+      ],
+      [
+        649493,
+        6683046
+      ],
+      [
+        650272,
+        6682440
+      ],
+      [
+        652421,
+        6682044
+      ],
+      [
+        653704,
+        6681808
+      ],
+      [
+        655628,
+        6681065
+      ],
+      [
+        656641,
+        6680694
+      ],
+      [
+        657586,
+        6680727
+      ],
+      [
+        658126,
+        6680356
+      ],
+      [
+        658666,
+        6679816
+      ],
+      [
+        658666,
+        6679208
+      ],
+      [
+        659172,
+        6678837
+      ],
+      [
+        659813,
+        6678533
+      ],
+      [
+        660657,
+        6678162
+      ],
+      [
+        661704,
+        6677960
+      ],
+      [
+        662649,
+        6677892
+      ],
+      [
+        663628,
+        6677757
+      ],
+      [
+        664202,
+        6677554
+      ],
+      [
+        665045,
+        6676677
+      ],
+      [
+        665619,
+        6676306
+      ],
+      [
+        666598,
+        6675934
+      ],
+      [
+        667138,
+        6675732
       ]
     ]
   }

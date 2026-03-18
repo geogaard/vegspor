@@ -47,6 +47,12 @@ For a bygge `mock-projects.js` og derivater tilbake fra autoritativ GeoJSON:
 node scripts/project-data.mjs build-mock
 ```
 
+Hvis du redigerer `data/projects_cleaned.geojson` i et eksternt verktøy, synk den inn som autoritativ fil og bygg kartdataene slik:
+
+```bash
+node scripts/sync-cleaned-geojson.mjs
+```
+
 For a migrere et eksisterende `CSV + UTM32`-oppsett til autoritativ GeoJSON:
 
 ```bash
